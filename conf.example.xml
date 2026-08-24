@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api request_dump="false" log_level="WARN">
+    <context>
+        <port>8080</port>
+        <host>0.0.0.0</host>
+        <path>/</path>
+        <time_zone>Africa/Nairobi</time_zone>
+        <enable_basic_auth>true</enable_basic_auth>
+        <undertow io_thread_pool="24" worker_thread_pool="120"/>
+    </context>
+    <database>
+        <host>localhost</host>
+        <port>5432</port>
+        <name>sky_core_db</name>
+        <user>db_user</user>
+        <password encrypted="false">password</password>
+        <pool_min>5</pool_min>
+        <pool_max>20</pool_max>
+        <checkout_timeout_seconds>30</checkout_timeout_seconds>
+    </database>
+    <authentication multiple_same_user_sessions="true">
+        <access_token>
+            <length>80</length>
+            <timeout time_unit="minutes">30</timeout>
+        </access_token>
+        <refresh_token>
+            <length>80</length>
+            <timeout time_unit="days">30</timeout>
+        </refresh_token>
+        <login>
+            <max_attempts>5</max_attempts>
+            <lockout_minutes>15</lockout_minutes>
+        </login>
+        <mfa_ip_check enabled="true"/>
+    </authentication>
+    <cors>
+        <allowed_origins>
+            <origin>http://localhost:*</origin>
+            <origin>http://127.0.0.1:*</origin>
+        </allowed_origins>
+        <allowed_methods>GET, POST, PUT, PATCH, DELETE, OPTIONS</allowed_methods>
+        <allowed_headers>Content-Type, Accept, Idempotency-Key, Authorization</allowed_headers>
+        <eposed_headers>Content-Disposition, Content-Length</eposed_headers>
+        <allow_credentials>true</allow_credentials>
+        <max_age_seconds>600</max_age_seconds>
+    </cors>
+    <email>
+        <host>smtp.gmail.com</host>
+        <port>587</port>
+        <username>your-email@gmail.com</username>
+        <password encrypted="false">your-app-password</password>
+        <from>Sky Core &lt;no-reply@skycore.com&gt;</from>
+        <starttls>true</starttls>
+        <enabled>false</enabled>
+    </email>
+    <otp>
+        <ttl_minutes>15</ttl_minutes>
+        <max_attempts>5</max_attempts>
+        <lockout_minutes>60</lockout_minutes>
+        <resend_cooldown_seconds>30</resend_cooldown_seconds>
+        <max_resends>3</max_resends>
+    </otp>
+    <storage>
+        <upload_dir>/tmp/uploads</upload_dir>
+    </storage>
+    <scheduler>
+        <enabled>true</enabled>
+        <thread_pool_size>5</thread_pool_size>
+    </scheduler>
+    <password_reset>
+        <web_origin>https://skycore.com</web_origin>
+        <ttl_minutes>30</ttl_minutes>
+    </password_reset>
+    <security key_salt=""/>
+</api>
