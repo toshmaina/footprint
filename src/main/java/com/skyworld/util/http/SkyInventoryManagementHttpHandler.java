@@ -14,6 +14,7 @@ import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.HashMap;
@@ -248,8 +249,10 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
 
     public static String getRequestBody(HttpServerExchange exchange) throws IOException {
         exchange.startBlocking();
-        byte[] bytes = exchange.getInputStream().readAllBytes();
-        return bytes.length > 0 ? new String(bytes, StandardCharsets.UTF_8) : null;
+        try (InputStream inputStream = exchange.getInputStream()) {
+            byte[] bytes = inputStream.readAllBytes();
+            return bytes.length > 0 ? new String(bytes, StandardCharsets.UTF_8) : null;
+        }
     }
 
     public static RequestContext currentUser(HttpServerExchange exchange) {
