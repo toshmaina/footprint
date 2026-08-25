@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ke.co.skyworld.internship</groupId>
-    <artifactId>sky-core</artifactId>
+    <artifactId>footprint</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -13,7 +13,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <properties.name>sky-core-api</properties.name>
+        <properties.name>footprint-api</properties.name>
 
         <undertow.version>2.4.0.Beta1</undertow.version>
         <jboss.logging.version>2.1.0.Final</jboss.logging.version>
@@ -206,7 +206,6 @@
             <version>${apache.tika.version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
@@ -250,6 +249,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
             </plugin>
 
             <plugin>

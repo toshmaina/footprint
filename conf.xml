@@ -11,8 +11,8 @@
         <host>localhost</host>
         <port>5432</port>
         <name>inventory_management</name>
-        <user encrypted="true">yEAbEuyyxrF3c+GS:ZikbrdLqJIPPwcW4h0rCRpPSs9l3</user>
-        <password encrypted="true">ezFz3Oj5Wvhit9h7:L/ojgA5IB9KWDjYCktjFShZomAKJbHHif4+2</password>
+        <user encrypted="true">YAPKjPKK6Z221Bxf:bznFV1MmfOnhxDOCBXeU6fEqdvQ/</user>
+        <password encrypted="true">9Yx1QxIz/eOUcVnH:mANGY/6hib2NHzAh5L431syVMd4CIvdNc76s</password>
         <pool_min>5</pool_min>
         <pool_max>20</pool_max>
         <checkout_timeout_seconds>30</checkout_timeout_seconds>
