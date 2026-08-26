@@ -6,11 +6,18 @@ import ke.co.skyworld.internship.util.db.ConnectionPool;
 import ke.co.skyworld.internship.util.http.Dispatcher;
 import ke.co.skyworld.internship.util.http.FallBack;
 import ke.co.skyworld.internship.util.http.InvalidMethod;
+import ke.co.skyworld.internship.util.http.handlers.advanceshippingnotice.CreateAdvanceShippingNoticeHandler;
+import ke.co.skyworld.internship.util.http.handlers.advanceshippingnotice.GetAdvanceShippingNoticeHandler;
+import ke.co.skyworld.internship.util.http.handlers.advanceshippingnotice.ListAdvanceShippingNoticesHandler;
 import ke.co.skyworld.internship.util.http.handlers.auth.LoginHandler;
 import ke.co.skyworld.internship.util.http.handlers.auth.LogoutHandler;
 import ke.co.skyworld.internship.util.http.handlers.auth.RefreshHandler;
 import ke.co.skyworld.internship.util.http.handlers.auth.RegisterHandler;
 import ke.co.skyworld.internship.util.http.handlers.products.*;
+import ke.co.skyworld.internship.util.http.handlers.purchaseorder.CancelPurchaseOrderHandler;
+import ke.co.skyworld.internship.util.http.handlers.purchaseorder.CreatePurchaseOrderHandler;
+import ke.co.skyworld.internship.util.http.handlers.purchaseorder.GetPurchaseOrderHandler;
+import ke.co.skyworld.internship.util.http.handlers.purchaseorder.ListPurchaseOrdersHandler;
 import ke.co.skyworld.internship.util.http.handlers.suppliers.*;
 import ke.co.skyworld.internship.util.http.handlers.warehouses.*;
 import ke.co.skyworld.internship.util.http.middleware.AuthMiddleware;
@@ -210,7 +217,16 @@ public class Main {
         router.put("/suppliers/{id}", new Dispatcher(new AuthMiddleware(new UpdateSupplierHandler(), "inventory.suppliers.write")));
         router.delete("/suppliers/{id}", new Dispatcher(new AuthMiddleware(new DeactivateSupplierHandler(), "inventory.suppliers.write")));
 
+        // Purchase Orders
+        router.get("/purchase-orders", new Dispatcher(new AuthMiddleware(new ListPurchaseOrdersHandler())));
+        router.get("/purchase-orders/{id}", new Dispatcher(new AuthMiddleware(new GetPurchaseOrderHandler())));
+        router.post("/purchase-orders", new Dispatcher(new AuthMiddleware(new CreatePurchaseOrderHandler(), "inventory.purchase_orders.write")));
+        router.delete("/purchase-orders/{id}", new Dispatcher(new AuthMiddleware(new CancelPurchaseOrderHandler(),"inventory.purchase_orders.write")));
 
+        // Advance Shipping Notice
+        router.get("/advance-shipping-notice", new Dispatcher(new AuthMiddleware(new ListAdvanceShippingNoticesHandler())));
+        router.get("/advance-shipping-notice/{id}", new Dispatcher(new AuthMiddleware(new GetAdvanceShippingNoticeHandler())));
+        router.post("/advance-shipping-notice", new Dispatcher(new AuthMiddleware(new CreateAdvanceShippingNoticeHandler(),"inventory.asns.write")));
 
         return router;
     }

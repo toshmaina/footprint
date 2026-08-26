@@ -1,5 +1,4 @@
-package ke.co.skyworld.internship.domain.beans;
-
+package ke.co.skyworld.internship.domain.beans.advanceshippingnotice;
 
 
 import java.util.Date;
