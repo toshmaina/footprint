@@ -16,10 +16,7 @@ import io.undertow.util.StatusCodes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static ke.co.skyworld.internship.config.Constants.*;
 import static ke.co.skyworld.internship.util.formatting.Converter.getObjectMapper;
@@ -326,7 +323,7 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
 
         int[] pageAndPageSize = new int[]{1, 10};
 
-        Deque<String> page = exchange.getQueryParameters().get("page");
+       Deque<String> page =  exchange.getQueryParameters().get("page");
         Deque<String> pageSize = exchange.getQueryParameters().get("pageSize");
 
         if (page != null) {

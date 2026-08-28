@@ -6,20 +6,20 @@ import ke.co.skyworld.internship.util.db.ConnectionPool;
 import ke.co.skyworld.internship.util.http.Dispatcher;
 import ke.co.skyworld.internship.util.http.FallBack;
 import ke.co.skyworld.internship.util.http.InvalidMethod;
-import ke.co.skyworld.internship.util.http.handlers.advanceshippingnotice.CreateAdvanceShippingNoticeHandler;
-import ke.co.skyworld.internship.util.http.handlers.advanceshippingnotice.GetAdvanceShippingNoticeHandler;
-import ke.co.skyworld.internship.util.http.handlers.advanceshippingnotice.ListAdvanceShippingNoticesHandler;
-import ke.co.skyworld.internship.util.http.handlers.auth.LoginHandler;
-import ke.co.skyworld.internship.util.http.handlers.auth.LogoutHandler;
-import ke.co.skyworld.internship.util.http.handlers.auth.RefreshHandler;
-import ke.co.skyworld.internship.util.http.handlers.auth.RegisterHandler;
-import ke.co.skyworld.internship.util.http.handlers.products.*;
-import ke.co.skyworld.internship.util.http.handlers.purchaseorder.CancelPurchaseOrderHandler;
-import ke.co.skyworld.internship.util.http.handlers.purchaseorder.CreatePurchaseOrderHandler;
-import ke.co.skyworld.internship.util.http.handlers.purchaseorder.GetPurchaseOrderHandler;
-import ke.co.skyworld.internship.util.http.handlers.purchaseorder.ListPurchaseOrdersHandler;
-import ke.co.skyworld.internship.util.http.handlers.suppliers.*;
-import ke.co.skyworld.internship.util.http.handlers.warehouses.*;
+import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.CreateAdvanceShippingNoticeHandler;
+import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.GetAdvanceShippingNoticeHandler;
+import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.ListAdvanceShippingNoticesHandler;
+import ke.co.skyworld.internship.controllers.handlers.auth.LoginHandler;
+import ke.co.skyworld.internship.controllers.handlers.auth.LogoutHandler;
+import ke.co.skyworld.internship.controllers.handlers.auth.RefreshHandler;
+import ke.co.skyworld.internship.controllers.handlers.auth.RegisterHandler;
+import ke.co.skyworld.internship.controllers.handlers.products.*;
+import ke.co.skyworld.internship.controllers.handlers.purchaseorder.CancelPurchaseOrderHandler;
+import ke.co.skyworld.internship.controllers.handlers.purchaseorder.CreatePurchaseOrderHandler;
+import ke.co.skyworld.internship.controllers.handlers.purchaseorder.GetPurchaseOrderHandler;
+import ke.co.skyworld.internship.controllers.handlers.purchaseorder.ListPurchaseOrdersHandler;
+import ke.co.skyworld.internship.controllers.handlers.suppliers.*;
+import ke.co.skyworld.internship.controllers.handlers.warehouses.*;
 import ke.co.skyworld.internship.util.http.middleware.AuthMiddleware;
 import ke.co.skyworld.internship.util.infra.SkyCoreScheduler;
 import ke.co.skyworld.internship.util.logging.Log;
@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static ke.co.skyworld.internship.config.Constants.*;
+import static ke.co.skyworld.internship.controllers.Routes.buildRouteHandler;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
@@ -182,55 +183,6 @@ public class Main {
                     "Error shutting down scheduler", e);
         }
     }
-
-    private static HttpHandler buildRouteHandler() {
-        RoutingHandler router = Handlers.routing()
-                .setFallbackHandler(new Dispatcher(new FallBack()))
-                .setInvalidMethodHandler(new Dispatcher(new InvalidMethod()));
-
-        router.post("/auth/register",  new Dispatcher(new AuthMiddleware(new RegisterHandler(), "identity.users.create")));
-        router.post("/auth/login", new Dispatcher(new LoginHandler()));
-        router.post("/auth/refresh", new Dispatcher(new RefreshHandler()));
-        router.post("/auth/logout", new Dispatcher(new AuthMiddleware(new LogoutHandler())));
-
-        // Products/Warehouses/Suppliers CRUD routes will register here next,
-        // each wrapped in AuthMiddleware where a permission check is needed:
-        //   router.get("/products", new Dispatcher(new AuthMiddleware(new ListProductsHandler())));
-
-        router.get("/products", new Dispatcher(new AuthMiddleware(new ListProductsHandler())));
-        router.get("/products/{id}", new Dispatcher(new AuthMiddleware(new GetProductHandler())));
-        router.post("/products", new Dispatcher(new AuthMiddleware(new CreateProductHandler(), "inventory.products.write")));
-        router.put("/products/{id}", new Dispatcher(new AuthMiddleware(new UpdateProductHandler(), "inventory.products.write")));
-        router.delete("/products/{id}", new Dispatcher(new AuthMiddleware(new DeactivateProductHandler(), "inventory.products.write")));
-
-        // Warehouses
-        router.get("/warehouses", new Dispatcher(new AuthMiddleware(new ListWarehousesHandler())));
-        router.get("/warehouses/{id}", new Dispatcher(new AuthMiddleware(new GetWarehouseHandler())));
-        router.post("/warehouses", new Dispatcher(new AuthMiddleware(new CreateWarehouseHandler(), "inventory.warehouses.write")));
-        router.put("/warehouses/{id}", new Dispatcher(new AuthMiddleware(new UpdateWarehouseHandler(), "inventory.warehouses.write")));
-        router.delete("/warehouses/{id}", new Dispatcher(new AuthMiddleware(new DeactivateWarehouseHandler(), "inventory.warehouses.write")));
-
-        // Suppliers
-        router.get("/suppliers", new Dispatcher(new AuthMiddleware(new ListSuppliersHandler())));
-        router.get("/suppliers/{id}", new Dispatcher(new AuthMiddleware(new GetSupplierHandler())));
-        router.post("/suppliers", new Dispatcher(new AuthMiddleware(new CreateSupplierHandler(), "inventory.suppliers.write")));
-        router.put("/suppliers/{id}", new Dispatcher(new AuthMiddleware(new UpdateSupplierHandler(), "inventory.suppliers.write")));
-        router.delete("/suppliers/{id}", new Dispatcher(new AuthMiddleware(new DeactivateSupplierHandler(), "inventory.suppliers.write")));
-
-        // Purchase Orders
-        router.get("/purchase-orders", new Dispatcher(new AuthMiddleware(new ListPurchaseOrdersHandler())));
-        router.get("/purchase-orders/{id}", new Dispatcher(new AuthMiddleware(new GetPurchaseOrderHandler())));
-        router.post("/purchase-orders", new Dispatcher(new AuthMiddleware(new CreatePurchaseOrderHandler(), "inventory.purchase_orders.write")));
-        router.delete("/purchase-orders/{id}", new Dispatcher(new AuthMiddleware(new CancelPurchaseOrderHandler(),"inventory.purchase_orders.write")));
-
-        // Advance Shipping Notice
-        router.get("/advance-shipping-notice", new Dispatcher(new AuthMiddleware(new ListAdvanceShippingNoticesHandler())));
-        router.get("/advance-shipping-notice/{id}", new Dispatcher(new AuthMiddleware(new GetAdvanceShippingNoticeHandler())));
-        router.post("/advance-shipping-notice", new Dispatcher(new AuthMiddleware(new CreateAdvanceShippingNoticeHandler(),"inventory.asns.write")));
-
-        return router;
-    }
-
 
     private static String orUnknown(String value) {
         return (value != null && !value.isBlank()) ? value : "?";

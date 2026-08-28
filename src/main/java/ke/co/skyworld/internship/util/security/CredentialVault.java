@@ -59,7 +59,7 @@ public final class CredentialVault {
      * setting encrypted="true" on the same element, if it is currently plaintext.
      */
     public static String resolvePlaintext(String tagPath) {
-        String raw = XmlUtils.readXMLTag(tagPath);
+        String raw = XmlUtils.readXMLTag(tagPath).replaceAll("\\s+", "");
         if (isMissingOrBlank(raw)) {
             return raw;
         }
