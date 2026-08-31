@@ -1,4 +1,4 @@
-package ke.co.skyworld.internship.domain.beans.discrepancysolution;
+package ke.co.skyworld.internship.domain.beans.discrepancyresolution;
 
 
 public class DiscrepancyResolutionRequest {
