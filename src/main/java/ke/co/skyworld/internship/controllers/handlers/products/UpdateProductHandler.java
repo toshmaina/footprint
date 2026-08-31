@@ -1,11 +1,11 @@
 package ke.co.skyworld.internship.controllers.handlers.products;
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.ProductRequest;
 import ke.co.skyworld.internship.repository.ProductRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 import java.util.Set;
@@ -15,6 +15,10 @@ public class UpdateProductHandler extends SkyInventoryManagementHttpHandler {
     private static final Set<String> VALID_CLASSIFICATIONS = Set.of("A", "B", "C");
 
     private final ProductRepository productRepository = new ProductRepository();
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -62,9 +66,5 @@ public class UpdateProductHandler extends SkyInventoryManagementHttpHandler {
             Log.error(getClass(), "handleRequest", "Product update failed: " + e.getMessage(), e);
             sendError(exchange, "Product update failed", StatusCodes.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 }

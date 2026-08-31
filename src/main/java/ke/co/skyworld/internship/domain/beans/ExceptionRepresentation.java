@@ -1,15 +1,13 @@
 package ke.co.skyworld.internship.domain.beans;
 
 
-
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import io.undertow.util.HttpString;
 import ke.co.skyworld.internship.util.formatting.DateTime;
 import ke.co.skyworld.internship.util.security.UID;
-import io.undertow.util.HttpString;
 
 import java.util.Date;
 import java.util.List;
-
 
 
 @JacksonXmlRootElement(

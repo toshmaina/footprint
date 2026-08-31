@@ -1,14 +1,12 @@
 package ke.co.skyworld.internship.config;
 
 
-
 import ke.co.skyworld.internship.util.formatting.XmlUtils;
 import ke.co.skyworld.internship.util.security.CredentialVault;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
 
 
 public class Constants {

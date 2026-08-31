@@ -9,7 +9,6 @@ import java.time.temporal.Temporal;
 import java.util.Date;
 
 
-
 public final class CellWriter {
 
     private CellWriter() {

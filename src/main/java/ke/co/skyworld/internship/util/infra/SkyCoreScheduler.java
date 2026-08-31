@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.util.*;
 
 
-
 public class SkyCoreScheduler {
     private static SkyCoreScheduler
             instance;

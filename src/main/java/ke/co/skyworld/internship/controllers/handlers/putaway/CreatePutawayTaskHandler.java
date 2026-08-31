@@ -11,7 +11,6 @@ import ke.co.skyworld.internship.util.logging.Log;
 import java.sql.SQLException;
 
 
-
 public class CreatePutawayTaskHandler extends SkyInventoryManagementHttpHandler {
 
     private final PutawayRepository putawayRepository = new PutawayRepository();

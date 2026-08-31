@@ -28,7 +28,7 @@ public final class CreateAdminUser {
             System.exit(1);
         }
 
-        String username = args[0] ;
+        String username = args[0];
         String email = args[1];
         String fullName = args[2];
         String password = args[3];

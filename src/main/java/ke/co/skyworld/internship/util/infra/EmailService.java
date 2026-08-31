@@ -1,8 +1,5 @@
 package ke.co.skyworld.internship.util.infra;
 
-import ke.co.skyworld.internship.config.Constants;
-import ke.co.skyworld.internship.util.formatting.TemplateEngine;
-import ke.co.skyworld.internship.util.logging.Log;
 import jakarta.activation.CommandMap;
 import jakarta.activation.MailcapCommandMap;
 import jakarta.mail.*;
@@ -10,6 +7,10 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import ke.co.skyworld.internship.config.Constants;
+import ke.co.skyworld.internship.util.formatting.TemplateEngine;
+import ke.co.skyworld.internship.util.logging.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

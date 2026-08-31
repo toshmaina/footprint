@@ -25,18 +25,59 @@ public class WarehouseResponse {
         this.dateModified = dateModified;
     }
 
-    public long getWarehouseId() { return warehouseId; }
-    public void setWarehouseId(long warehouseId) { this.warehouseId = warehouseId; }
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
-    public Date getDateCreated() { return dateCreated; }
-    public void setDateCreated(Date dateCreated) { this.dateCreated = dateCreated; }
-    public Date getDateModified() { return dateModified; }
-    public void setDateModified(Date dateModified) { this.dateModified = dateModified; }
+    public long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
+    }
 }

@@ -3,16 +3,34 @@ package ke.co.skyworld.internship.repository;
 import ke.co.skyworld.internship.domain.beans.ProductResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class ProductRepository {
+
+    private static void setNullableString(PreparedStatement ps, int index, String value) throws SQLException {
+        if (value != null && !value.isBlank()) {
+            ps.setString(index, value);
+        } else {
+            ps.setNull(index, Types.VARCHAR);
+        }
+    }
+
+    private static ProductResponse mapRow(ResultSet rs) throws SQLException {
+        return new ProductResponse(
+                rs.getLong("product_id"),
+                rs.getString("product_sku"),
+                rs.getString("product_name"),
+                rs.getString("product_category"),
+                rs.getInt("product_reorder_threshold"),
+                rs.getString("product_classification"),
+                rs.getBoolean("product_is_active"),
+                rs.getTimestamp("date_created"),
+                rs.getTimestamp("date_modified")
+        );
+    }
 
     public boolean skuExists(String sku) throws SQLException {
         String sql = "SELECT 1 FROM products WHERE product_sku = ?";
@@ -125,27 +143,5 @@ public class ProductRepository {
             ps.setLong(1, productId);
             return ps.executeUpdate() > 0;
         }
-    }
-
-    private static void setNullableString(PreparedStatement ps, int index, String value) throws SQLException {
-        if (value != null && !value.isBlank()) {
-            ps.setString(index, value);
-        } else {
-            ps.setNull(index, Types.VARCHAR);
-        }
-    }
-
-    private static ProductResponse mapRow(ResultSet rs) throws SQLException {
-        return new ProductResponse(
-                rs.getLong("product_id"),
-                rs.getString("product_sku"),
-                rs.getString("product_name"),
-                rs.getString("product_category"),
-                rs.getInt("product_reorder_threshold"),
-                rs.getString("product_classification"),
-                rs.getBoolean("product_is_active"),
-                rs.getTimestamp("date_created"),
-                rs.getTimestamp("date_modified")
-        );
     }
 }

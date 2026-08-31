@@ -7,6 +7,11 @@ public class PutawayConfirmationRequest {
     public PutawayConfirmationRequest() {
     }
 
-    public Long getActualStorageLocationId() { return actualStorageLocationId; }
-    public void setActualStorageLocationId(Long actualStorageLocationId) { this.actualStorageLocationId = actualStorageLocationId; }
+    public Long getActualStorageLocationId() {
+        return actualStorageLocationId;
+    }
+
+    public void setActualStorageLocationId(Long actualStorageLocationId) {
+        this.actualStorageLocationId = actualStorageLocationId;
+    }
 }

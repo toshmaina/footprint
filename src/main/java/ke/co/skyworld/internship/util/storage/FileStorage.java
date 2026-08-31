@@ -13,8 +13,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 
-
-
 public class FileStorage {
 
     private static final Tika TIKA = new Tika();

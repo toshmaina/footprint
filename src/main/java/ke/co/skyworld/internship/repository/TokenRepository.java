@@ -4,18 +4,42 @@ import ke.co.skyworld.internship.domain.enums.TokenType;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 import ke.co.skyworld.internship.util.security.Encryption;
 
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.security.SecureRandom;
 import java.util.HexFormat;
 
 public class TokenRepository {
 
     private static final SecureRandom SECURE_RANDOM =
             new SecureRandom();
+
+    private static String generateRawToken(int tokenLength) {
+
+        if (tokenLength <= 0) {
+            throw new IllegalArgumentException(
+                    "Token length must be greater than zero"
+            );
+        }
+
+        /*
+         * Hexadecimal encoding produces two characters
+         * for every random byte.
+         */
+        int byteLength = (tokenLength + 1) / 2;
+
+        byte[] randomBytes = new byte[byteLength];
+
+        SECURE_RANDOM.nextBytes(randomBytes);
+
+        String token =
+                HexFormat.of().formatHex(randomBytes);
+
+        return token.substring(0, tokenLength);
+    }
 
     public Long getUserIdByToken(
             TokenType type,
@@ -106,29 +130,5 @@ public class TokenRepository {
             ps.setString(1, tokenHash);
             ps.executeUpdate();
         }
-    }
-
-    private static String generateRawToken(int tokenLength) {
-
-        if (tokenLength <= 0) {
-            throw new IllegalArgumentException(
-                    "Token length must be greater than zero"
-            );
-        }
-
-        /*
-         * Hexadecimal encoding produces two characters
-         * for every random byte.
-         */
-        int byteLength = (tokenLength + 1) / 2;
-
-        byte[] randomBytes = new byte[byteLength];
-
-        SECURE_RANDOM.nextBytes(randomBytes);
-
-        String token =
-                HexFormat.of().formatHex(randomBytes);
-
-        return token.substring(0, tokenLength);
     }
 }

@@ -28,6 +28,35 @@ public class TokenService {
 
     }
 
+    private static Duration createDuration(int timeout, String unit) {
+
+        if (timeout <= 0) {
+            throw new IllegalArgumentException(
+                    "Token timeout must be greater than zero"
+            );
+        }
+
+        if (unit == null || unit.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Token timeout unit cannot be null or blank"
+            );
+        }
+
+        return switch (unit.trim().toLowerCase()) {
+            case "seconds", "second", "sec", "s" -> Duration.ofSeconds(timeout);
+
+            case "minutes", "minute", "min", "m" -> Duration.ofMinutes(timeout);
+
+            case "hours", "hour", "hr", "h" -> Duration.ofHours(timeout);
+
+            case "days", "day", "d" -> Duration.ofDays(timeout);
+
+            default -> throw new IllegalArgumentException(
+                    "Unsupported token timeout unit: " + unit
+            );
+        };
+    }
+
     public String issueAccessToken(long userAccountId) throws SQLException {
         validateUserId(userAccountId);
 
@@ -95,38 +124,5 @@ public class TokenService {
             );
         }
 
-    }
-    private static Duration createDuration(int timeout, String unit) {
-
-        if (timeout <= 0) {
-            throw new IllegalArgumentException(
-                    "Token timeout must be greater than zero"
-            );
-        }
-
-        if (unit == null || unit.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Token timeout unit cannot be null or blank"
-            );
-        }
-
-        return switch (unit.trim().toLowerCase()) {
-            case "seconds", "second", "sec", "s" ->
-                    Duration.ofSeconds(timeout);
-
-            case "minutes", "minute", "min", "m" ->
-                    Duration.ofMinutes(timeout);
-
-            case "hours", "hour", "hr", "h" ->
-                    Duration.ofHours(timeout);
-
-            case "days", "day", "d" ->
-                    Duration.ofDays(timeout);
-
-            default ->
-                    throw new IllegalArgumentException(
-                            "Unsupported token timeout unit: " + unit
-                    );
-        };
     }
 }

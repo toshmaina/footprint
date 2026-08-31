@@ -1,9 +1,6 @@
 package ke.co.skyworld.internship.domain.beans;
 
 
-
-
-
 import ke.co.skyworld.internship.config.Constants;
 
 import java.util.ArrayList;
@@ -11,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 
 
 public final class OriginAllowlist {

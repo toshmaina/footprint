@@ -1,19 +1,23 @@
 package ke.co.skyworld.internship.controllers.handlers.auth;
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.RegisterRequest;
 import ke.co.skyworld.internship.domain.beans.RegisterResponse;
 import ke.co.skyworld.internship.repository.UserAccountRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 import ke.co.skyworld.internship.util.security.Encryption;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 
 public class RegisterHandler extends SkyInventoryManagementHttpHandler {
 
     private final UserAccountRepository userAccountRepository = new UserAccountRepository();
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -64,9 +68,5 @@ public class RegisterHandler extends SkyInventoryManagementHttpHandler {
                 sendError(exchange, "Registration failed due to an internal error", StatusCodes.INTERNAL_SERVER_ERROR);
             }
         }
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 }

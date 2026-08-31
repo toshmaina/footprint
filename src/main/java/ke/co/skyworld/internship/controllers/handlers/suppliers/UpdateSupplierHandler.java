@@ -1,7 +1,6 @@
 package ke.co.skyworld.internship.controllers.handlers.suppliers;
 
 
-
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.supplier.SupplierRequest;
@@ -14,6 +13,10 @@ import java.sql.SQLException;
 public class UpdateSupplierHandler extends SkyInventoryManagementHttpHandler {
 
     private final SupplierRepository supplierRepository = new SupplierRepository();
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -55,9 +58,5 @@ public class UpdateSupplierHandler extends SkyInventoryManagementHttpHandler {
             Log.error(getClass(), "handleRequest", "Supplier update failed: " + e.getMessage(), e);
             sendError(exchange, "Supplier update failed", StatusCodes.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 }

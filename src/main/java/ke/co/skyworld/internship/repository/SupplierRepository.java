@@ -4,16 +4,35 @@ package ke.co.skyworld.internship.repository;
 import ke.co.skyworld.internship.domain.beans.supplier.SupplierResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class SupplierRepository {
+
+    private static void setNullableString(PreparedStatement ps, int index, String value) throws SQLException {
+        if (value != null && !value.isBlank()) {
+            ps.setString(index, value);
+        } else {
+            ps.setNull(index, Types.VARCHAR);
+        }
+    }
+
+    private static SupplierResponse mapRow(ResultSet rs) throws SQLException {
+        int leadTime = rs.getInt("supplier_default_lead_time_days");
+        Integer leadTimeObj = rs.wasNull() ? null : leadTime;
+        return new SupplierResponse(
+                rs.getLong("supplier_id"),
+                rs.getString("supplier_name"),
+                rs.getString("supplier_contact_email"),
+                rs.getString("supplier_contact_phone"),
+                leadTimeObj,
+                rs.getBoolean("supplier_is_active"),
+                rs.getTimestamp("date_created"),
+                rs.getTimestamp("date_modified")
+        );
+    }
 
     public long create(String name, String contactEmail, String contactPhone, Integer leadTimeDays) throws SQLException {
         String sql = """
@@ -106,28 +125,5 @@ public class SupplierRepository {
             ps.setLong(1, supplierId);
             return ps.executeUpdate() > 0;
         }
-    }
-
-    private static void setNullableString(PreparedStatement ps, int index, String value) throws SQLException {
-        if (value != null && !value.isBlank()) {
-            ps.setString(index, value);
-        } else {
-            ps.setNull(index, Types.VARCHAR);
-        }
-    }
-
-    private static SupplierResponse mapRow(ResultSet rs) throws SQLException {
-        int leadTime = rs.getInt("supplier_default_lead_time_days");
-        Integer leadTimeObj = rs.wasNull() ? null : leadTime;
-        return new SupplierResponse(
-                rs.getLong("supplier_id"),
-                rs.getString("supplier_name"),
-                rs.getString("supplier_contact_email"),
-                rs.getString("supplier_contact_phone"),
-                leadTimeObj,
-                rs.getBoolean("supplier_is_active"),
-                rs.getTimestamp("date_created"),
-                rs.getTimestamp("date_modified")
-        );
     }
 }

@@ -12,11 +12,19 @@ import ke.co.skyworld.internship.controllers.handlers.auth.LoginHandler;
 import ke.co.skyworld.internship.controllers.handlers.auth.LogoutHandler;
 import ke.co.skyworld.internship.controllers.handlers.auth.RefreshHandler;
 import ke.co.skyworld.internship.controllers.handlers.auth.RegisterHandler;
+import ke.co.skyworld.internship.controllers.handlers.customer.CreateCustomerHandler;
+import ke.co.skyworld.internship.controllers.handlers.customer.GetCustomerHandler;
+import ke.co.skyworld.internship.controllers.handlers.customer.ListCustomersHandler;
+import ke.co.skyworld.internship.controllers.handlers.goodsdiscrepancy.ResolveDiscrepancyHandler;
 import ke.co.skyworld.internship.controllers.handlers.goodsreceipts.CreateGoodsReceiptHandler;
 import ke.co.skyworld.internship.controllers.handlers.goodsreceipts.GetGoodsReceiptHandler;
 import ke.co.skyworld.internship.controllers.handlers.goodsreceipts.ListGoodsReceiptsHandler;
 import ke.co.skyworld.internship.controllers.handlers.licenseplate.CreateLicensePlatesHandler;
 import ke.co.skyworld.internship.controllers.handlers.licenseplate.GetLicensePlateHandler;
+import ke.co.skyworld.internship.controllers.handlers.order.CreateOrderHandler;
+import ke.co.skyworld.internship.controllers.handlers.order.GetOrderHandler;
+import ke.co.skyworld.internship.controllers.handlers.pickupwave.CreatePickWaveHandler;
+import ke.co.skyworld.internship.controllers.handlers.pickupwave.GetPickWaveHandler;
 import ke.co.skyworld.internship.controllers.handlers.products.*;
 import ke.co.skyworld.internship.controllers.handlers.purchaseorder.CancelPurchaseOrderHandler;
 import ke.co.skyworld.internship.controllers.handlers.purchaseorder.CreatePurchaseOrderHandler;
@@ -25,6 +33,7 @@ import ke.co.skyworld.internship.controllers.handlers.purchaseorder.ListPurchase
 import ke.co.skyworld.internship.controllers.handlers.putaway.ConfirmPutawayHandler;
 import ke.co.skyworld.internship.controllers.handlers.putaway.CreatePutawayTaskHandler;
 import ke.co.skyworld.internship.controllers.handlers.qa.RecordQaInspectionHandler;
+import ke.co.skyworld.internship.controllers.handlers.storagelocation.*;
 import ke.co.skyworld.internship.controllers.handlers.suppliers.*;
 import ke.co.skyworld.internship.controllers.handlers.warehouses.*;
 import ke.co.skyworld.internship.util.http.CorsHandler;
@@ -51,19 +60,22 @@ public class Routes {
                 .add(Methods.POST, "/logout", authed(new LogoutHandler()))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     private static RoutingHandler products() {
         return Handlers.routing()
                 .add(Methods.GET, "/", authed(new ListProductsHandler()))
                 .add(Methods.GET, "/{id}", authed(new GetProductHandler()))
+                .add(Methods.GET, "/{sku}/stock", authed(new GetProductStockHandler()))
                 .add(Methods.POST, "/", authed(new CreateProductHandler(), "inventory.products.write"))
                 .add(Methods.PUT, "/{id}", authed(new UpdateProductHandler(), "inventory.products.write"))
                 .add(Methods.DELETE, "/{id}", authed(new DeactivateProductHandler(), "inventory.products.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     private static RoutingHandler warehouses() {
@@ -75,7 +87,8 @@ public class Routes {
                 .add(Methods.DELETE, "/{id}", authed(new DeactivateWarehouseHandler(), "inventory.warehouses.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     private static RoutingHandler suppliers() {
@@ -87,7 +100,8 @@ public class Routes {
                 .add(Methods.DELETE, "/{id}", authed(new DeactivateSupplierHandler(), "inventory.suppliers.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     private static RoutingHandler purchaseOrders() {
@@ -98,7 +112,8 @@ public class Routes {
                 .add(Methods.POST, "/{id}/cancel", authed(new CancelPurchaseOrderHandler(), "inventory.purchase_orders.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     private static RoutingHandler advanceShippingNotices() {
@@ -108,7 +123,8 @@ public class Routes {
                 .add(Methods.POST, "/", authed(new CreateAdvanceShippingNoticeHandler(), "inventory.asns.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     private static RoutingHandler goodsReceipts() {
@@ -118,7 +134,18 @@ public class Routes {
                 .add(Methods.POST, "/", authed(new CreateGoodsReceiptHandler(), "inventory.goods_receipts.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
+    }
+
+
+    private static RoutingHandler discrepancies() {
+        return Handlers.routing()
+                .add(Methods.POST, "/{id}/resolve", authed(new ResolveDiscrepancyHandler(), "inventory.discrepancies.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     /**
@@ -132,7 +159,8 @@ public class Routes {
                 .add(Methods.POST, "/{id}/license-plates", authed(new CreateLicensePlatesHandler(), "inventory.license_plates.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     private static RoutingHandler licensePlates() {
@@ -144,7 +172,8 @@ public class Routes {
                 .add(Methods.POST, "/{id}/putaway-tasks", authed(new CreatePutawayTaskHandler(), "inventory.putaway.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     /**
@@ -158,7 +187,59 @@ public class Routes {
                 .add(Methods.POST, "/{id}/confirm", authed(new ConfirmPutawayHandler(), "inventory.putaway.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
+    }
+
+    private static RoutingHandler storageLocations() {
+        return Handlers.routing()
+                .add(Methods.GET, "/", authed(new ListStorageLocationsHandler()))
+                .add(Methods.GET, "/{id}", authed(new GetStorageLocationHandler()))
+                .add(Methods.POST, "/", authed(new CreateStorageLocationHandler(), "inventory.storage_locations.write"))
+                .add(Methods.PUT, "/{id}", authed(new UpdateStorageLocationHandler(), "inventory.storage_locations.write"))
+                .add(Methods.DELETE, "/{id}", authed(new DeactivateStorageLocationHandler(), "inventory.storage_locations.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
+    }
+
+
+    private static RoutingHandler customers() {
+        return Handlers.routing()
+                .add(Methods.GET, "/", authed(new ListCustomersHandler()))
+                .add(Methods.GET, "/{id}", authed(new GetCustomerHandler()))
+                .add(Methods.POST, "/", authed(new CreateCustomerHandler(), "inventory.customers.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
+    }
+
+    /**
+     * POST / is THE acceptance-test endpoint - each call attempts
+     * reserve_stock() per line under an advisory lock scoped to
+     * (product, warehouse), so concurrent calls for the same SKU
+     * serialize correctly instead of overselling.
+     */
+    private static RoutingHandler orders() {
+        return Handlers.routing()
+                .add(Methods.GET, "/{id}", authed(new GetOrderHandler()))
+                .add(Methods.POST, "/", authed(new CreateOrderHandler(), "inventory.orders.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
+    }
+
+    private static RoutingHandler pickWaves() {
+        return Handlers.routing()
+                .add(Methods.GET, "/{id}", authed(new GetPickWaveHandler()))
+                .add(Methods.POST, "/", authed(new CreatePickWaveHandler(), "inventory.picking.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     public static HttpHandler buildRouteHandler() {
@@ -174,6 +255,11 @@ public class Routes {
         path.addPrefixPath("/goods-receipt-lines", new Dispatcher(goodsReceiptLines()));
         path.addPrefixPath("/license-plates", new Dispatcher(licensePlates()));
         path.addPrefixPath("/putaway-tasks", new Dispatcher(putawayTasks()));
+        path.addPrefixPath("/storage-locations", new Dispatcher(storageLocations()));
+        path.addPrefixPath("/customers", new Dispatcher(customers()));
+        path.addPrefixPath("/orders", new Dispatcher(orders()));
+        path.addPrefixPath("/pick-waves", new Dispatcher(pickWaves()));
+        path.addPrefixPath("/discrepancies", new Dispatcher(discrepancies()));
 
         return path;
     }

@@ -1,18 +1,22 @@
 package ke.co.skyworld.internship.controllers.handlers.warehouses;
 
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.warehouse.WarehouseRequest;
 import ke.co.skyworld.internship.repository.WarehouseRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 
 public class CreateWarehouseHandler extends SkyInventoryManagementHttpHandler {
 
     private final WarehouseRepository warehouseRepository = new WarehouseRepository();
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -44,9 +48,5 @@ public class CreateWarehouseHandler extends SkyInventoryManagementHttpHandler {
             Log.error(getClass(), "handleRequest", "Warehouse creation failed: " + e.getMessage(), e);
             sendError(exchange, "Warehouse creation failed", StatusCodes.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 }

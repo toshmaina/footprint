@@ -8,16 +8,44 @@ public class RegisterRequest {
     private Long warehouseId; // Use wrapper class Long to allow nulls
 
     // Getters
-    public String getUsername() { return username; }
-    public String getEmail() { return email; }
-    public String getPassword() { return password; }
-    public String getFullName() { return fullName; }
-    public Long getWarehouseId() { return warehouseId; }
+    public String getUsername() {
+        return username;
+    }
 
     // Setters
-    public void setUsername(String username) { this.username = username; }
-    public void setEmail(String email) { this.email = email; }
-    public void setPassword(String password) { this.password = password; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-    public void setWarehouseId(Long warehouseId) { this.warehouseId = warehouseId; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public Long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
 }

@@ -23,7 +23,6 @@ import java.util.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
-
 public class XmlUtils {
 
     private static Document parseXML() {

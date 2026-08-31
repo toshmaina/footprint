@@ -1,5 +1,7 @@
 package ke.co.skyworld.internship.controllers.handlers.auth;
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.config.Constants;
 import ke.co.skyworld.internship.domain.beans.LoginResponse;
 import ke.co.skyworld.internship.domain.beans.RefreshRequest;
@@ -9,8 +11,6 @@ import ke.co.skyworld.internship.repository.UserAccountRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 import ke.co.skyworld.internship.util.security.TokenTtl;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -25,10 +25,10 @@ import java.time.Duration;
  */
 public class RefreshHandler extends SkyInventoryManagementHttpHandler {
 
-    private final TokenRepository tokenRepository = new TokenRepository();
-    private final UserAccountRepository userAccountRepository = new UserAccountRepository();
     private static final int REFRESH_TOKEN_LENGTH = Constants.getRefreshTokenLength();
     private static final int ACCESS_TOKEN_LENGTH = Constants.getAccessTokenLength();
+    private final TokenRepository tokenRepository = new TokenRepository();
+    private final UserAccountRepository userAccountRepository = new UserAccountRepository();
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -66,7 +66,7 @@ public class RefreshHandler extends SkyInventoryManagementHttpHandler {
             Duration accessTtl = TokenTtl.accessTokenTtl();
             Duration refreshTtl = TokenTtl.refreshTokenTtl();
 
-            String newAccessToken = tokenRepository.issueToken(userAccountId, TokenType.ACCESS, accessTtl,ACCESS_TOKEN_LENGTH);
+            String newAccessToken = tokenRepository.issueToken(userAccountId, TokenType.ACCESS, accessTtl, ACCESS_TOKEN_LENGTH);
             String newRefreshToken = tokenRepository.issueToken(userAccountId, TokenType.REFRESH, refreshTtl, REFRESH_TOKEN_LENGTH);
 
             send(exchange, new LoginResponse(newAccessToken, newRefreshToken, accessTtl.toSeconds()), StatusCodes.OK);

@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
 public class Log {
 
     private static void log(Logger logger, LoggingLevel loggingLevel, String message, Throwable throwable) {

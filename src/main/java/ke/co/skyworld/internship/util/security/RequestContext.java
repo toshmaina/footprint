@@ -22,7 +22,9 @@ public record RequestContext(
 
     public static final AttachmentKey<RequestContext> ATTACHMENT_KEY = AttachmentKey.create(RequestContext.class);
 
-    /** RBAC superuser marker permission — bypasses all other permission checks. */
+    /**
+     * RBAC superuser marker permission — bypasses all other permission checks.
+     */
     public static final String PERMISSION_FULL_ACCESS = "system.full_access";
 
     public boolean hasPermission(String permission) {

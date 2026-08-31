@@ -5,14 +5,12 @@ import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.goodsreceipt.GoodsReceiptRequest;
 import ke.co.skyworld.internship.repository.GoodsReceiptRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
-import ke.co.skyworld.internship.util.security.RequestContext;
 import ke.co.skyworld.internship.util.logging.Log;
-
+import ke.co.skyworld.internship.util.security.RequestContext;
 
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
-
 
 
 public class CreateGoodsReceiptHandler extends SkyInventoryManagementHttpHandler {

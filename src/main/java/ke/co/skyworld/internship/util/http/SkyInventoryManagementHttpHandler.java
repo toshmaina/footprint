@@ -2,9 +2,6 @@ package ke.co.skyworld.internship.util.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ke.co.skyworld.internship.domain.beans.ExceptionRepresentation;
-import ke.co.skyworld.internship.util.logging.Log;
-import ke.co.skyworld.internship.util.security.RequestContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
@@ -12,16 +9,20 @@ import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.util.Headers;
 import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;
+import ke.co.skyworld.internship.domain.beans.ExceptionRepresentation;
+import ke.co.skyworld.internship.util.logging.Log;
+import ke.co.skyworld.internship.util.security.RequestContext;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import static ke.co.skyworld.internship.config.Constants.*;
 import static ke.co.skyworld.internship.util.formatting.Converter.getObjectMapper;
-
-
 
 
 public class SkyInventoryManagementHttpHandler implements HttpHandler {
@@ -323,7 +324,7 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
 
         int[] pageAndPageSize = new int[]{1, 10};
 
-       Deque<String> page =  exchange.getQueryParameters().get("page");
+        Deque<String> page = exchange.getQueryParameters().get("page");
         Deque<String> pageSize = exchange.getQueryParameters().get("pageSize");
 
         if (page != null) {

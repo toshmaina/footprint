@@ -4,16 +4,32 @@ package ke.co.skyworld.internship.repository;
 import ke.co.skyworld.internship.domain.beans.warehouse.WarehouseResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class WarehouseRepository {
+
+    private static void setNullableString(PreparedStatement ps, int index, String value) throws SQLException {
+        if (value != null && !value.isBlank()) {
+            ps.setString(index, value);
+        } else {
+            ps.setNull(index, Types.VARCHAR);
+        }
+    }
+
+    private static WarehouseResponse mapRow(ResultSet rs) throws SQLException {
+        return new WarehouseResponse(
+                rs.getLong("warehouse_id"),
+                rs.getString("warehouse_code"),
+                rs.getString("warehouse_name"),
+                rs.getString("warehouse_address"),
+                rs.getBoolean("warehouse_is_active"),
+                rs.getTimestamp("date_created"),
+                rs.getTimestamp("date_modified")
+        );
+    }
 
     public boolean codeExists(String code) throws SQLException {
         String sql = "SELECT 1 FROM warehouses WHERE warehouse_code = ?";
@@ -99,25 +115,5 @@ public class WarehouseRepository {
             ps.setLong(1, warehouseId);
             return ps.executeUpdate() > 0;
         }
-    }
-
-    private static void setNullableString(PreparedStatement ps, int index, String value) throws SQLException {
-        if (value != null && !value.isBlank()) {
-            ps.setString(index, value);
-        } else {
-            ps.setNull(index, Types.VARCHAR);
-        }
-    }
-
-    private static WarehouseResponse mapRow(ResultSet rs) throws SQLException {
-        return new WarehouseResponse(
-                rs.getLong("warehouse_id"),
-                rs.getString("warehouse_code"),
-                rs.getString("warehouse_name"),
-                rs.getString("warehouse_address"),
-                rs.getBoolean("warehouse_is_active"),
-                rs.getTimestamp("date_created"),
-                rs.getTimestamp("date_modified")
-        );
     }
 }

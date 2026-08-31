@@ -1,9 +1,10 @@
 package ke.co.skyworld.internship.util.formatting;
 
-import ke.co.skyworld.internship.util.logging.Log;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
+import ke.co.skyworld.internship.util.logging.Log;
+
 import java.io.StringWriter;
 import java.util.Map;
 

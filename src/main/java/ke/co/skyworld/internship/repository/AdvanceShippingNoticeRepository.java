@@ -1,24 +1,44 @@
 package ke.co.skyworld.internship.repository;
 
 
-
-
-
 import ke.co.skyworld.internship.domain.beans.advanceshippingnotice.AdvanceShippingNoticeRequest;
 import ke.co.skyworld.internship.domain.beans.advanceshippingnotice.AdvanceShippingNoticeResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class AdvanceShippingNoticeRepository {
+
+    private static AdvanceShippingNoticeResponse mapHeader(ResultSet rs, List<AdvanceShippingNoticeResponse.Line> lines)
+            throws SQLException {
+        long poId = rs.getLong("purchase_order_id");
+        Long purchaseOrderId = rs.wasNull() ? null : poId;
+        return new AdvanceShippingNoticeResponse(
+                rs.getLong("advance_shipping_notice_id"),
+                purchaseOrderId,
+                rs.getLong("supplier_id"),
+                rs.getLong("warehouse_id"),
+                rs.getString("advance_shipping_notice_carrier"),
+                rs.getTimestamp("advance_shipping_notice_expected_arrival"),
+                rs.getString("advance_shipping_notice_status"),
+                lines,
+                rs.getTimestamp("date_created"),
+                rs.getTimestamp("date_modified")
+        );
+    }
+
+    private static AdvanceShippingNoticeResponse.Line mapLine(ResultSet rs) throws SQLException {
+        return new AdvanceShippingNoticeResponse.Line(
+                rs.getLong("advance_shipping_notice_line_id"),
+                rs.getLong("product_id"),
+                rs.getInt("advance_shipping_notice_line_quantity_expected"),
+                rs.getString("advance_shipping_notice_line_lot_number"),
+                rs.getString("advance_shipping_notice_line_packaging_type")
+        );
+    }
 
     public long createWithLines(Long purchaseOrderId, long supplierId, long warehouseId, String carrier,
                                 java.util.Date expectedArrival, List<AdvanceShippingNoticeRequest.Line> lines)
@@ -36,7 +56,7 @@ public class AdvanceShippingNoticeRepository {
                 VALUES (?, ?, ?, ?, ?)
                 """;
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             conn.setAutoCommit(false);
             try {
                 long asnId;
@@ -94,7 +114,7 @@ public class AdvanceShippingNoticeRepository {
         String linesSql = "SELECT * FROM advance_shipping_notice_lines WHERE advance_shipping_notice_id = ? " +
                 "ORDER BY advance_shipping_notice_line_id";
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             AdvanceShippingNoticeResponse header;
             try (PreparedStatement ps = conn.prepareStatement(headerSql)) {
                 ps.setLong(1, asnId);
@@ -125,7 +145,7 @@ public class AdvanceShippingNoticeRepository {
         List<AdvanceShippingNoticeResponse> items = new ArrayList<>();
         long total;
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             try (PreparedStatement countPs = conn.prepareStatement(countSql);
                  ResultSet countRs = countPs.executeQuery()) {
                 countRs.next();
@@ -142,33 +162,5 @@ public class AdvanceShippingNoticeRepository {
             }
         }
         return new PageResult<>(items, total);
-    }
-
-    private static AdvanceShippingNoticeResponse mapHeader(ResultSet rs, List<AdvanceShippingNoticeResponse.Line> lines)
-            throws SQLException {
-        long poId = rs.getLong("purchase_order_id");
-        Long purchaseOrderId = rs.wasNull() ? null : poId;
-        return new AdvanceShippingNoticeResponse(
-                rs.getLong("advance_shipping_notice_id"),
-                purchaseOrderId,
-                rs.getLong("supplier_id"),
-                rs.getLong("warehouse_id"),
-                rs.getString("advance_shipping_notice_carrier"),
-                rs.getTimestamp("advance_shipping_notice_expected_arrival"),
-                rs.getString("advance_shipping_notice_status"),
-                lines,
-                rs.getTimestamp("date_created"),
-                rs.getTimestamp("date_modified")
-        );
-    }
-
-    private static AdvanceShippingNoticeResponse.Line mapLine(ResultSet rs) throws SQLException {
-        return new AdvanceShippingNoticeResponse.Line(
-                rs.getLong("advance_shipping_notice_line_id"),
-                rs.getLong("product_id"),
-                rs.getInt("advance_shipping_notice_line_quantity_expected"),
-                rs.getString("advance_shipping_notice_line_lot_number"),
-                rs.getString("advance_shipping_notice_line_packaging_type")
-        );
     }
 }

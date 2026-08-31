@@ -1,13 +1,12 @@
 package ke.co.skyworld.internship.util.http;
 
-import ke.co.skyworld.internship.config.Constants;
-import ke.co.skyworld.internship.domain.beans.OriginAllowlist;
-import ke.co.skyworld.internship.util.logging.Log;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
-
+import ke.co.skyworld.internship.config.Constants;
+import ke.co.skyworld.internship.domain.beans.OriginAllowlist;
+import ke.co.skyworld.internship.util.logging.Log;
 
 
 public class CorsHandler implements HttpHandler {

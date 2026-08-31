@@ -36,29 +36,100 @@ public class LicensePlateResponse {
         this.dateModified = dateModified;
     }
 
-    public long getLicensePlateId() { return licensePlateId; }
-    public void setLicensePlateId(long licensePlateId) { this.licensePlateId = licensePlateId; }
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
-    public Long getGoodsReceiptLineId() { return goodsReceiptLineId; }
-    public void setGoodsReceiptLineId(Long goodsReceiptLineId) { this.goodsReceiptLineId = goodsReceiptLineId; }
-    public long getProductId() { return productId; }
-    public void setProductId(long productId) { this.productId = productId; }
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
-    public String getLotNumber() { return lotNumber; }
-    public void setLotNumber(String lotNumber) { this.lotNumber = lotNumber; }
-    public long getWarehouseId() { return warehouseId; }
-    public void setWarehouseId(long warehouseId) { this.warehouseId = warehouseId; }
-    public Long getCurrentStorageLocationId() { return currentStorageLocationId; }
-    public void setCurrentStorageLocationId(Long currentStorageLocationId) { this.currentStorageLocationId = currentStorageLocationId; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    public Long getParentLicensePlateId() { return parentLicensePlateId; }
-    public void setParentLicensePlateId(Long parentLicensePlateId) { this.parentLicensePlateId = parentLicensePlateId; }
-    public Date getDateCreated() { return dateCreated; }
-    public void setDateCreated(Date dateCreated) { this.dateCreated = dateCreated; }
-    public Date getDateModified() { return dateModified; }
-    public void setDateModified(Date dateModified) { this.dateModified = dateModified; }
+    public long getLicensePlateId() {
+        return licensePlateId;
+    }
+
+    public void setLicensePlateId(long licensePlateId) {
+        this.licensePlateId = licensePlateId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Long getGoodsReceiptLineId() {
+        return goodsReceiptLineId;
+    }
+
+    public void setGoodsReceiptLineId(Long goodsReceiptLineId) {
+        this.goodsReceiptLineId = goodsReceiptLineId;
+    }
+
+    public long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(long productId) {
+        this.productId = productId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getLotNumber() {
+        return lotNumber;
+    }
+
+    public void setLotNumber(String lotNumber) {
+        this.lotNumber = lotNumber;
+    }
+
+    public long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public Long getCurrentStorageLocationId() {
+        return currentStorageLocationId;
+    }
+
+    public void setCurrentStorageLocationId(Long currentStorageLocationId) {
+        this.currentStorageLocationId = currentStorageLocationId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Long getParentLicensePlateId() {
+        return parentLicensePlateId;
+    }
+
+    public void setParentLicensePlateId(Long parentLicensePlateId) {
+        this.parentLicensePlateId = parentLicensePlateId;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
+    }
 }
 

@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
 
 
-
 public class Converter {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(

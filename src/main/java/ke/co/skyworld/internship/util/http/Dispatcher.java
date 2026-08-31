@@ -1,9 +1,8 @@
 package ke.co.skyworld.internship.util.http;
 
-import ke.co.skyworld.internship.util.logging.Log;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-
+import ke.co.skyworld.internship.util.logging.Log;
 
 
 public class Dispatcher implements HttpHandler {

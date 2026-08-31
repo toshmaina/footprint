@@ -14,14 +14,37 @@ public class PurchaseOrderRequest {
     public PurchaseOrderRequest() {
     }
 
-    public Long getSupplierId() { return supplierId; }
-    public void setSupplierId(Long supplierId) { this.supplierId = supplierId; }
-    public Long getWarehouseId() { return warehouseId; }
-    public void setWarehouseId(Long warehouseId) { this.warehouseId = warehouseId; }
-    public Date getExpectedDate() { return expectedDate; }
-    public void setExpectedDate(Date expectedDate) { this.expectedDate = expectedDate; }
-    public List<Line> getLines() { return lines; }
-    public void setLines(List<Line> lines) { this.lines = lines; }
+    public Long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Long supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public Long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public Date getExpectedDate() {
+        return expectedDate;
+    }
+
+    public void setExpectedDate(Date expectedDate) {
+        this.expectedDate = expectedDate;
+    }
+
+    public List<Line> getLines() {
+        return lines;
+    }
+
+    public void setLines(List<Line> lines) {
+        this.lines = lines;
+    }
 
     public static class Line {
         private Long productId;
@@ -31,11 +54,28 @@ public class PurchaseOrderRequest {
         public Line() {
         }
 
-        public Long getProductId() { return productId; }
-        public void setProductId(Long productId) { this.productId = productId; }
-        public Integer getQuantityOrdered() { return quantityOrdered; }
-        public void setQuantityOrdered(Integer quantityOrdered) { this.quantityOrdered = quantityOrdered; }
-        public BigDecimal getUnitCost() { return unitCost; }
-        public void setUnitCost(BigDecimal unitCost) { this.unitCost = unitCost; }
+        public Long getProductId() {
+            return productId;
+        }
+
+        public void setProductId(Long productId) {
+            this.productId = productId;
+        }
+
+        public Integer getQuantityOrdered() {
+            return quantityOrdered;
+        }
+
+        public void setQuantityOrdered(Integer quantityOrdered) {
+            this.quantityOrdered = quantityOrdered;
+        }
+
+        public BigDecimal getUnitCost() {
+            return unitCost;
+        }
+
+        public void setUnitCost(BigDecimal unitCost) {
+            this.unitCost = unitCost;
+        }
     }
 }

@@ -1,5 +1,7 @@
 package ke.co.skyworld.internship.util.http;
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.config.Constants;
 import ke.co.skyworld.internship.domain.beans.LoginRequest;
 import ke.co.skyworld.internship.domain.beans.LoginResponse;
@@ -9,18 +11,20 @@ import ke.co.skyworld.internship.repository.UserAccountRepository;
 import ke.co.skyworld.internship.util.logging.Log;
 import ke.co.skyworld.internship.util.security.Encryption;
 import ke.co.skyworld.internship.util.security.TokenTtl;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 import java.time.Duration;
 
 public class LoginHandler extends SkyInventoryManagementHttpHandler {
 
-    private final UserAccountRepository userAccountRepository = new UserAccountRepository();
-    private final TokenRepository tokenRepository = new TokenRepository();
     private static final int REFRESH_TOKEN_LENGTH = Constants.getRefreshTokenLength();
     private static final int ACCESS_TOKEN_LENGTH = Constants.getAccessTokenLength();
+    private final UserAccountRepository userAccountRepository = new UserAccountRepository();
+    private final TokenRepository tokenRepository = new TokenRepository();
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -58,17 +62,13 @@ public class LoginHandler extends SkyInventoryManagementHttpHandler {
             Duration accessTtl = TokenTtl.accessTokenTtl();
             Duration refreshTtl = TokenTtl.refreshTokenTtl();
 
-            String accessToken = tokenRepository.issueToken(credentials.userAccountId(), TokenType.ACCESS, accessTtl,ACCESS_TOKEN_LENGTH);
-            String refreshToken = tokenRepository.issueToken(credentials.userAccountId(), TokenType.REFRESH, refreshTtl,REFRESH_TOKEN_LENGTH);
+            String accessToken = tokenRepository.issueToken(credentials.userAccountId(), TokenType.ACCESS, accessTtl, ACCESS_TOKEN_LENGTH);
+            String refreshToken = tokenRepository.issueToken(credentials.userAccountId(), TokenType.REFRESH, refreshTtl, REFRESH_TOKEN_LENGTH);
 
             send(exchange, new LoginResponse(accessToken, refreshToken, accessTtl.toSeconds()), StatusCodes.OK);
         } catch (SQLException e) {
             Log.error(getClass(), "handleRequest", "Login failed: " + e.getMessage(), e);
             sendError(exchange, "Login failed", StatusCodes.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 }

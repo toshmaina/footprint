@@ -3,7 +3,6 @@ package ke.co.skyworld.internship.util.formatting;
 import java.util.LinkedHashMap;
 
 
-
 public class XmlTag {
     private String name;
     private String value;

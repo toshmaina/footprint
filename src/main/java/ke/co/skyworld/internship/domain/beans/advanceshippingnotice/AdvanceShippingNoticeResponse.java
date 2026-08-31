@@ -34,26 +34,85 @@ public class AdvanceShippingNoticeResponse {
         this.dateModified = dateModified;
     }
 
-    public long getAdvanceShippingNoticeId() { return advanceShippingNoticeId; }
-    public void setAdvanceShippingNoticeId(long advanceShippingNoticeId) { this.advanceShippingNoticeId = advanceShippingNoticeId; }
-    public Long getPurchaseOrderId() { return purchaseOrderId; }
-    public void setPurchaseOrderId(Long purchaseOrderId) { this.purchaseOrderId = purchaseOrderId; }
-    public long getSupplierId() { return supplierId; }
-    public void setSupplierId(long supplierId) { this.supplierId = supplierId; }
-    public long getWarehouseId() { return warehouseId; }
-    public void setWarehouseId(long warehouseId) { this.warehouseId = warehouseId; }
-    public String getCarrier() { return carrier; }
-    public void setCarrier(String carrier) { this.carrier = carrier; }
-    public Date getExpectedArrival() { return expectedArrival; }
-    public void setExpectedArrival(Date expectedArrival) { this.expectedArrival = expectedArrival; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    public List<Line> getLines() { return lines; }
-    public void setLines(List<Line> lines) { this.lines = lines; }
-    public Date getDateCreated() { return dateCreated; }
-    public void setDateCreated(Date dateCreated) { this.dateCreated = dateCreated; }
-    public Date getDateModified() { return dateModified; }
-    public void setDateModified(Date dateModified) { this.dateModified = dateModified; }
+    public long getAdvanceShippingNoticeId() {
+        return advanceShippingNoticeId;
+    }
+
+    public void setAdvanceShippingNoticeId(long advanceShippingNoticeId) {
+        this.advanceShippingNoticeId = advanceShippingNoticeId;
+    }
+
+    public Long getPurchaseOrderId() {
+        return purchaseOrderId;
+    }
+
+    public void setPurchaseOrderId(Long purchaseOrderId) {
+        this.purchaseOrderId = purchaseOrderId;
+    }
+
+    public long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(long supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public String getCarrier() {
+        return carrier;
+    }
+
+    public void setCarrier(String carrier) {
+        this.carrier = carrier;
+    }
+
+    public Date getExpectedArrival() {
+        return expectedArrival;
+    }
+
+    public void setExpectedArrival(Date expectedArrival) {
+        this.expectedArrival = expectedArrival;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public List<Line> getLines() {
+        return lines;
+    }
+
+    public void setLines(List<Line> lines) {
+        this.lines = lines;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
+    }
 
     public static class Line {
         private long advanceShippingNoticeLineId;
@@ -74,15 +133,44 @@ public class AdvanceShippingNoticeResponse {
             this.packagingType = packagingType;
         }
 
-        public long getAdvanceShippingNoticeLineId() { return advanceShippingNoticeLineId; }
-        public void setAdvanceShippingNoticeLineId(long advanceShippingNoticeLineId) { this.advanceShippingNoticeLineId = advanceShippingNoticeLineId; }
-        public long getProductId() { return productId; }
-        public void setProductId(long productId) { this.productId = productId; }
-        public int getQuantityExpected() { return quantityExpected; }
-        public void setQuantityExpected(int quantityExpected) { this.quantityExpected = quantityExpected; }
-        public String getLotNumber() { return lotNumber; }
-        public void setLotNumber(String lotNumber) { this.lotNumber = lotNumber; }
-        public String getPackagingType() { return packagingType; }
-        public void setPackagingType(String packagingType) { this.packagingType = packagingType; }
+        public long getAdvanceShippingNoticeLineId() {
+            return advanceShippingNoticeLineId;
+        }
+
+        public void setAdvanceShippingNoticeLineId(long advanceShippingNoticeLineId) {
+            this.advanceShippingNoticeLineId = advanceShippingNoticeLineId;
+        }
+
+        public long getProductId() {
+            return productId;
+        }
+
+        public void setProductId(long productId) {
+            this.productId = productId;
+        }
+
+        public int getQuantityExpected() {
+            return quantityExpected;
+        }
+
+        public void setQuantityExpected(int quantityExpected) {
+            this.quantityExpected = quantityExpected;
+        }
+
+        public String getLotNumber() {
+            return lotNumber;
+        }
+
+        public void setLotNumber(String lotNumber) {
+            this.lotNumber = lotNumber;
+        }
+
+        public String getPackagingType() {
+            return packagingType;
+        }
+
+        public void setPackagingType(String packagingType) {
+            this.packagingType = packagingType;
+        }
     }
 }

@@ -1,7 +1,6 @@
 package ke.co.skyworld.internship.domain.beans.purchaseorder;
 
 
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -34,24 +33,77 @@ public class PurchaseOrderResponse {
         this.dateModified = dateModified;
     }
 
-    public long getPurchaseOrderId() { return purchaseOrderId; }
-    public void setPurchaseOrderId(long purchaseOrderId) { this.purchaseOrderId = purchaseOrderId; }
-    public long getSupplierId() { return supplierId; }
-    public void setSupplierId(long supplierId) { this.supplierId = supplierId; }
-    public long getWarehouseId() { return warehouseId; }
-    public void setWarehouseId(long warehouseId) { this.warehouseId = warehouseId; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    public Date getExpectedDate() { return expectedDate; }
-    public void setExpectedDate(Date expectedDate) { this.expectedDate = expectedDate; }
-    public String getCreatedBy() { return createdBy; }
-    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
-    public List<Line> getLines() { return lines; }
-    public void setLines(List<Line> lines) { this.lines = lines; }
-    public Date getDateCreated() { return dateCreated; }
-    public void setDateCreated(Date dateCreated) { this.dateCreated = dateCreated; }
-    public Date getDateModified() { return dateModified; }
-    public void setDateModified(Date dateModified) { this.dateModified = dateModified; }
+    public long getPurchaseOrderId() {
+        return purchaseOrderId;
+    }
+
+    public void setPurchaseOrderId(long purchaseOrderId) {
+        this.purchaseOrderId = purchaseOrderId;
+    }
+
+    public long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(long supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Date getExpectedDate() {
+        return expectedDate;
+    }
+
+    public void setExpectedDate(Date expectedDate) {
+        this.expectedDate = expectedDate;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public List<Line> getLines() {
+        return lines;
+    }
+
+    public void setLines(List<Line> lines) {
+        this.lines = lines;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
+    }
 
     public static class Line {
         private long purchaseOrderLineId;
@@ -71,15 +123,44 @@ public class PurchaseOrderResponse {
             this.status = status;
         }
 
-        public long getPurchaseOrderLineId() { return purchaseOrderLineId; }
-        public void setPurchaseOrderLineId(long purchaseOrderLineId) { this.purchaseOrderLineId = purchaseOrderLineId; }
-        public long getProductId() { return productId; }
-        public void setProductId(long productId) { this.productId = productId; }
-        public int getQuantityOrdered() { return quantityOrdered; }
-        public void setQuantityOrdered(int quantityOrdered) { this.quantityOrdered = quantityOrdered; }
-        public BigDecimal getUnitCost() { return unitCost; }
-        public void setUnitCost(BigDecimal unitCost) { this.unitCost = unitCost; }
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
+        public long getPurchaseOrderLineId() {
+            return purchaseOrderLineId;
+        }
+
+        public void setPurchaseOrderLineId(long purchaseOrderLineId) {
+            this.purchaseOrderLineId = purchaseOrderLineId;
+        }
+
+        public long getProductId() {
+            return productId;
+        }
+
+        public void setProductId(long productId) {
+            this.productId = productId;
+        }
+
+        public int getQuantityOrdered() {
+            return quantityOrdered;
+        }
+
+        public void setQuantityOrdered(int quantityOrdered) {
+            this.quantityOrdered = quantityOrdered;
+        }
+
+        public BigDecimal getUnitCost() {
+            return unitCost;
+        }
+
+        public void setUnitCost(BigDecimal unitCost) {
+            this.unitCost = unitCost;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
     }
 }

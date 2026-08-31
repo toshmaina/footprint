@@ -1,7 +1,6 @@
 package ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice;
 
 
-
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.advanceshippingnotice.AdvanceShippingNoticeResponse;
@@ -11,7 +10,6 @@ import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;
 import java.util.Optional;
-
 
 
 public class GetAdvanceShippingNoticeHandler extends SkyInventoryManagementHttpHandler {

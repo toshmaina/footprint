@@ -1,23 +1,11 @@
 package ke.co.skyworld.internship.repository;
 
 
-
-
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 
 public class PutawayRepository {
-
-    public static class InvalidStateException extends RuntimeException {
-        public InvalidStateException(String message) {
-            super(message);
-        }
-    }
 
     /**
      * Only allowed while the LPN is 'putaway_pending' (QA-passed, not yet
@@ -33,7 +21,7 @@ public class PutawayRepository {
                 RETURNING putaway_task_id
                 """;
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             conn.setAutoCommit(false);
             try {
                 String status;
@@ -80,14 +68,14 @@ public class PutawayRepository {
     /**
      * THE concurrency-critical operation this entire schema's double-putaway
      * guard exists for. Two layers of protection, deliberately redundant:
-     *   1. Row lock on putaway_tasks (SELECT ... FOR UPDATE) - the first
-     *      concurrent caller to reach this wins the lock; the second blocks
-     *      until the first commits, then sees the task already confirmed
-     *      and exits via the status check below.
-     *   2. UNIQUE(putaway_task_id) on putaway_confirmations - the real
-     *      backstop if, for whatever reason, two processes ever bypass the
-     *      row lock (e.g. different connection pools, a future refactor
-     *      that forgets the lock). The INSERT itself will throw 23505.
+     * 1. Row lock on putaway_tasks (SELECT ... FOR UPDATE) - the first
+     * concurrent caller to reach this wins the lock; the second blocks
+     * until the first commits, then sees the task already confirmed
+     * and exits via the status check below.
+     * 2. UNIQUE(putaway_task_id) on putaway_confirmations - the real
+     * backstop if, for whatever reason, two processes ever bypass the
+     * row lock (e.g. different connection pools, a future refactor
+     * that forgets the lock). The INSERT itself will throw 23505.
      * Belt and suspenders is deliberate here, not redundant - this is the
      * exact failure mode ("phantom stock") the whole project opened with.
      */
@@ -117,7 +105,7 @@ public class PutawayRepository {
                 VALUES (?, ?, 'PUTAWAY', ?, ?, ?, 'putaway_confirmations', ?, ?)
                 """;
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             conn.setAutoCommit(false);
             try {
                 String status;
@@ -194,6 +182,12 @@ public class PutawayRepository {
                 conn.rollback();
                 throw e;
             }
+        }
+    }
+
+    public static class InvalidStateException extends RuntimeException {
+        public InvalidStateException(String message) {
+            super(message);
         }
     }
 }

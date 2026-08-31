@@ -1,15 +1,12 @@
 package ke.co.skyworld.internship.util.db;
 
-import ke.co.skyworld.internship.config.Constants;
-import ke.co.skyworld.internship.util.logging.Log;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
+import ke.co.skyworld.internship.config.Constants;
+import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
-
 
 
 public final class ConnectionPool {
@@ -84,7 +81,7 @@ public final class ConnectionPool {
         return dataSource;
     }
 
-    public  Connection borrow() throws SQLException {
+    public Connection borrow() throws SQLException {
         return dataSource.getConnection();
     }
 

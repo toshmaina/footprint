@@ -1,12 +1,12 @@
 package ke.co.skyworld.internship.controllers.handlers.warehouses;
 
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.warehouse.WarehouseResponse;
 import ke.co.skyworld.internship.repository.WarehouseRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 import java.util.Optional;

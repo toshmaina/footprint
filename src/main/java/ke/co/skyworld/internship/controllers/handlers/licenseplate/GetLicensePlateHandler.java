@@ -10,6 +10,7 @@ import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;
 import java.util.Optional;
+
 public class GetLicensePlateHandler extends SkyInventoryManagementHttpHandler {
 
     private final LicensePlateRepository licensePlateRepository = new LicensePlateRepository();

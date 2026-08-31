@@ -10,15 +10,44 @@ public class QaInspectionRequest {
     public QaInspectionRequest() {
     }
 
-    public Integer getSampleSize() { return sampleSize; }
-    public void setSampleSize(Integer sampleSize) { this.sampleSize = sampleSize; }
-    public String getMethod() { return method; }
-    public void setMethod(String method) { this.method = method; }
-    public String getDisposition() { return disposition; }
-    public void setDisposition(String disposition) { this.disposition = disposition; }
-    public Integer getFailedQuantity() { return failedQuantity; }
-    public void setFailedQuantity(Integer failedQuantity) { this.failedQuantity = failedQuantity; }
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public Integer getSampleSize() {
+        return sampleSize;
+    }
+
+    public void setSampleSize(Integer sampleSize) {
+        this.sampleSize = sampleSize;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getDisposition() {
+        return disposition;
+    }
+
+    public void setDisposition(String disposition) {
+        this.disposition = disposition;
+    }
+
+    public Integer getFailedQuantity() {
+        return failedQuantity;
+    }
+
+    public void setFailedQuantity(Integer failedQuantity) {
+        this.failedQuantity = failedQuantity;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 }
 

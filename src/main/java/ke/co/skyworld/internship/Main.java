@@ -1,38 +1,18 @@
 package ke.co.skyworld.internship;
 
 import com.github.lalyos.jfiglet.FigletFont;
+import com.zaxxer.hikari.HikariDataSource;
+import io.undertow.Undertow;
 import ke.co.skyworld.internship.config.Constants;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
-import ke.co.skyworld.internship.util.http.Dispatcher;
-import ke.co.skyworld.internship.util.http.FallBack;
-import ke.co.skyworld.internship.util.http.InvalidMethod;
-import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.CreateAdvanceShippingNoticeHandler;
-import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.GetAdvanceShippingNoticeHandler;
-import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.ListAdvanceShippingNoticesHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.LoginHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.LogoutHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.RefreshHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.RegisterHandler;
-import ke.co.skyworld.internship.controllers.handlers.products.*;
-import ke.co.skyworld.internship.controllers.handlers.purchaseorder.CancelPurchaseOrderHandler;
-import ke.co.skyworld.internship.controllers.handlers.purchaseorder.CreatePurchaseOrderHandler;
-import ke.co.skyworld.internship.controllers.handlers.purchaseorder.GetPurchaseOrderHandler;
-import ke.co.skyworld.internship.controllers.handlers.purchaseorder.ListPurchaseOrdersHandler;
-import ke.co.skyworld.internship.controllers.handlers.suppliers.*;
-import ke.co.skyworld.internship.controllers.handlers.warehouses.*;
-import ke.co.skyworld.internship.util.http.middleware.AuthMiddleware;
+import ke.co.skyworld.internship.util.infra.ReservationExpirySweeper;
 import ke.co.skyworld.internship.util.infra.SkyCoreScheduler;
 import ke.co.skyworld.internship.util.logging.Log;
-import com.zaxxer.hikari.HikariDataSource;
-import io.undertow.Handlers;
-import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.RoutingHandler;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
-
+import org.quartz.SchedulerException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -41,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import static ke.co.skyworld.internship.config.Constants.*;
 import static ke.co.skyworld.internship.controllers.Routes.buildRouteHandler;
 import static org.fusesource.jansi.Ansi.ansi;
-
 
 
 public class Main {
@@ -94,8 +73,36 @@ public class Main {
         ConnectionPool.initialize();
 
 
-    }
+        if (Constants.isSchedulerEnabled()) {
+            try {
+                sscheduler = new SkyCoreScheduler(
+                        new SkyCoreScheduler.QuartzProperties()
+                                .withThreadCount(Constants.getSchedulerThreadPoolSize())
+                );
+                sscheduler.start();
 
+                ReservationExpirySweeper sweeper = new ReservationExpirySweeper();
+                // Every minute, at second 0. Quartz cron format: sec min hour day month weekday.
+                sscheduler.scheduleCron(
+                        "reservation-expiry-sweep",
+                        "INVENTORY",
+                        "0 * * * * ?",
+                        sweeper::sweep
+                );
+
+                Log.info(Main.class, "bootstrap", "Scheduler started - reservation expiry sweep registered");
+            } catch (SchedulerException e) {
+                // A failed scheduler start shouldn't take down the whole API -
+                // reservations just won't auto-expire until this is fixed and
+                // the app restarted. Log loudly rather than crash on boot.
+                Log.error(Main.class, "bootstrap", "Failed to start scheduler: " + e.getMessage(), e);
+            }
+        } else {
+            Log.info(Main.class, "bootstrap", "Scheduler disabled via config - reservations will NOT auto-expire");
+        }
+
+
+    }
 
 
     private static Undertow buildServer() {

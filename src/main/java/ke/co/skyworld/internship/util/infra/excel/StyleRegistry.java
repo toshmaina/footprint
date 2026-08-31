@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-
 public class StyleRegistry {
 
     private final Workbook workbook;

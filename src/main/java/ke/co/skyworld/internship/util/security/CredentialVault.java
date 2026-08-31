@@ -1,7 +1,6 @@
 package ke.co.skyworld.internship.util.security;
 
 
-
 import ke.co.skyworld.internship.config.Constants;
 import ke.co.skyworld.internship.util.formatting.XmlUtils;
 

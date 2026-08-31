@@ -1,9 +1,8 @@
 package ke.co.skyworld.internship.util.http;
 
-import ke.co.skyworld.internship.domain.beans.ExceptionRepresentation;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
-
+import ke.co.skyworld.internship.domain.beans.ExceptionRepresentation;
 
 
 public class FallBack extends SkyInventoryManagementHttpHandler {

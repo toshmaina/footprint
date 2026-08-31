@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 
-
 public class GetGoodsReceiptHandler extends SkyInventoryManagementHttpHandler {
 
     private final GoodsReceiptRepository goodsReceiptRepository = new GoodsReceiptRepository();

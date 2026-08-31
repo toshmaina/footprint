@@ -2,11 +2,7 @@ package ke.co.skyworld.internship.repository;
 
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 
 /**
  * Minimal for now - what AuthMiddleware, login, and registration need.
@@ -14,12 +10,6 @@ import java.sql.Types;
  * same as products/warehouses/suppliers.
  */
 public class UserAccountRepository {
-
-    public record AuthSnapshot(Long defaultWarehouseId, String status) {
-    }
-
-    public record LoginCredentials(long userAccountId, String passwordHash, String status) {
-    }
 
     /**
      * Returns null if the user_account_id doesn't exist (e.g. the row was
@@ -147,5 +137,11 @@ public class UserAccountRepository {
                 }
             }
         }
+    }
+
+    public record AuthSnapshot(Long defaultWarehouseId, String status) {
+    }
+
+    public record LoginCredentials(long userAccountId, String passwordHash, String status) {
     }
 }

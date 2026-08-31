@@ -1,16 +1,11 @@
 package ke.co.skyworld.internship.repository;
 
 
-
 import ke.co.skyworld.internship.domain.beans.goodsreceipt.GoodsReceiptRequest;
 import ke.co.skyworld.internship.domain.beans.goodsreceipt.GoodsReceiptResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,13 +46,15 @@ public class GoodsReceiptRepository {
                 VALUES (?, ?, 'GOODS_RECEIPT', ?, 'goods_receipt_lines', ?, ?)
                 """;
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             conn.setAutoCommit(false);
             try {
                 long goodsReceiptId;
                 try (PreparedStatement ps = conn.prepareStatement(headerSql)) {
-                    if (asnId != null) ps.setLong(1, asnId); else ps.setNull(1, Types.BIGINT);
-                    if (dockAppointmentId != null) ps.setLong(2, dockAppointmentId); else ps.setNull(2, Types.BIGINT);
+                    if (asnId != null) ps.setLong(1, asnId);
+                    else ps.setNull(1, Types.BIGINT);
+                    if (dockAppointmentId != null) ps.setLong(2, dockAppointmentId);
+                    else ps.setNull(2, Types.BIGINT);
                     ps.setLong(3, warehouseId);
                     ps.setString(4, receivedBy);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -76,7 +73,8 @@ public class GoodsReceiptRepository {
                         ps.setInt(4, line.getQuantityCounted());
                         if (line.getQuantityExpected() != null) ps.setInt(5, line.getQuantityExpected());
                         else ps.setNull(5, Types.INTEGER);
-                        if (line.getLotNumber() != null && !line.getLotNumber().isBlank()) ps.setString(6, line.getLotNumber());
+                        if (line.getLotNumber() != null && !line.getLotNumber().isBlank())
+                            ps.setString(6, line.getLotNumber());
                         else ps.setNull(6, Types.VARCHAR);
                         String condition = (line.getConditionFlag() != null && !line.getConditionFlag().isBlank())
                                 ? line.getConditionFlag() : "unverified";
@@ -131,7 +129,7 @@ public class GoodsReceiptRepository {
                 ORDER BY grl.goods_receipt_line_id
                 """;
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             GoodsReceiptResponse header;
             try (PreparedStatement ps = conn.prepareStatement(headerSql)) {
                 ps.setLong(1, goodsReceiptId);
@@ -172,7 +170,7 @@ public class GoodsReceiptRepository {
 
         List<GoodsReceiptResponse> items = new ArrayList<>();
         long total;
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             try (PreparedStatement ps = conn.prepareStatement(countSql); ResultSet rs = ps.executeQuery()) {
                 rs.next();
                 total = rs.getLong(1);

@@ -1,5 +1,8 @@
 package ke.co.skyworld.internship.util.http.middleware;
 
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.enums.TokenType;
 import ke.co.skyworld.internship.repository.PermissionRepository;
 import ke.co.skyworld.internship.repository.TokenRepository;
@@ -7,9 +10,6 @@ import ke.co.skyworld.internship.repository.UserAccountRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 import ke.co.skyworld.internship.util.security.RequestContext;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 import java.util.Set;

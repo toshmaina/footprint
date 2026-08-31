@@ -3,21 +3,51 @@ package ke.co.skyworld.internship.repository;
 
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 
 public class QaRepository {
 
-    public record QaOutcome(long inspectionId, long resultId, List<Long> resultingLicensePlateIds) {
+    private static void updateStatus(Connection conn, String sql, long licensePlateId, String status) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setLong(2, licensePlateId);
+            ps.executeUpdate();
+        }
     }
 
-    public static class InvalidDispositionException extends RuntimeException {
-        public InvalidDispositionException(String message) {
-            super(message);
+    private static void writeLedger(Connection conn, String sql, long productId, long warehouseId, String type,
+                                    int delta, long licensePlateId, String createdBy) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, productId);
+            ps.setLong(2, warehouseId);
+            ps.setString(3, type);
+            ps.setInt(4, delta);
+            ps.setLong(5, licensePlateId);
+            ps.setLong(6, licensePlateId);
+            ps.setString(7, createdBy);
+            ps.executeUpdate();
+        }
+    }
+
+    private static long insertChild(Connection conn, String sql, String code, Long lineId, long productId,
+                                    int quantity, long warehouseId, String status, long parentId,
+                                    String splitBy, long resultId) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, code);
+            if (lineId != null) ps.setLong(2, lineId);
+            else ps.setNull(2, Types.BIGINT);
+            ps.setLong(3, productId);
+            ps.setInt(4, quantity);
+            ps.setLong(5, warehouseId);
+            ps.setString(6, status);
+            ps.setLong(7, parentId);
+            ps.setString(8, splitBy);
+            ps.setLong(9, resultId);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getLong("license_plate_id");
+            }
         }
     }
 
@@ -69,7 +99,7 @@ public class QaRepository {
                 VALUES (?, ?, ?::stock_movement_type, ?, ?, 'license_plates', ?, ?)
                 """;
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             conn.setAutoCommit(false);
             try {
                 String code;
@@ -101,10 +131,12 @@ public class QaRepository {
 
                 long inspectionId;
                 try (PreparedStatement ps = conn.prepareStatement(insertInspectionSql)) {
-                    if (lineId != null) ps.setLong(1, lineId); else ps.setNull(1, Types.BIGINT);
+                    if (lineId != null) ps.setLong(1, lineId);
+                    else ps.setNull(1, Types.BIGINT);
                     ps.setLong(2, licensePlateId);
                     ps.setString(3, inspector);
-                    if (sampleSize != null) ps.setInt(4, sampleSize); else ps.setNull(4, Types.INTEGER);
+                    if (sampleSize != null) ps.setInt(4, sampleSize);
+                    else ps.setNull(4, Types.INTEGER);
                     ps.setString(5, (method != null && !method.isBlank()) ? method : "visual");
                     try (ResultSet rs = ps.executeQuery()) {
                         rs.next();
@@ -124,7 +156,8 @@ public class QaRepository {
                     ps.setLong(1, inspectionId);
                     ps.setString(2, disposition);
                     ps.setInt(3, recordedFailedQuantity);
-                    if (notes != null && !notes.isBlank()) ps.setString(4, notes); else ps.setNull(4, Types.VARCHAR);
+                    if (notes != null && !notes.isBlank()) ps.setString(4, notes);
+                    else ps.setNull(4, Types.VARCHAR);
                     try (ResultSet rs = ps.executeQuery()) {
                         rs.next();
                         resultId = rs.getLong("quality_assurance_inspection_result_id");
@@ -175,45 +208,12 @@ public class QaRepository {
         }
     }
 
-    private static void updateStatus(Connection conn, String sql, long licensePlateId, String status) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, status);
-            ps.setLong(2, licensePlateId);
-            ps.executeUpdate();
-        }
+    public record QaOutcome(long inspectionId, long resultId, List<Long> resultingLicensePlateIds) {
     }
 
-    private static void writeLedger(Connection conn, String sql, long productId, long warehouseId, String type,
-                                    int delta, long licensePlateId, String createdBy) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, productId);
-            ps.setLong(2, warehouseId);
-            ps.setString(3, type);
-            ps.setInt(4, delta);
-            ps.setLong(5, licensePlateId);
-            ps.setLong(6, licensePlateId);
-            ps.setString(7, createdBy);
-            ps.executeUpdate();
-        }
-    }
-
-    private static long insertChild(Connection conn, String sql, String code, Long lineId, long productId,
-                                    int quantity, long warehouseId, String status, long parentId,
-                                    String splitBy, long resultId) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, code);
-            if (lineId != null) ps.setLong(2, lineId); else ps.setNull(2, Types.BIGINT);
-            ps.setLong(3, productId);
-            ps.setInt(4, quantity);
-            ps.setLong(5, warehouseId);
-            ps.setString(6, status);
-            ps.setLong(7, parentId);
-            ps.setString(8, splitBy);
-            ps.setLong(9, resultId);
-            try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                return rs.getLong("license_plate_id");
-            }
+    public static class InvalidDispositionException extends RuntimeException {
+        public InvalidDispositionException(String message) {
+            super(message);
         }
     }
 }

@@ -9,7 +9,6 @@ import java.util.Base64;
 import java.util.UUID;
 
 
-
 public class UID {
     private static final SecureRandom RANDOM = new SecureRandom();
     private String salt = "abcdefghijklmnopqrstuvwxyz@#$!%^&*(*)1234567890";

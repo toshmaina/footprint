@@ -4,26 +4,36 @@ import ke.co.skyworld.internship.domain.beans.licenseplates.CreateLicensePlatesR
 import ke.co.skyworld.internship.domain.beans.licenseplates.LicensePlateResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class LicensePlateRepository {
 
-    /**
-     * Splits a received line's counted quantity across one or more physical
-     * LPNs (pallets). Locks the goods_receipt_line row with SELECT ... FOR
-     * UPDATE for the duration of the transaction - without it, two
-     * concurrent calls creating LPNs against the same line could both read
-     * "quantity so far: 0" and together create more LPN quantity than the
-     * line actually received, the same class of race the putaway/reservation
-     * guards exist to prevent elsewhere in this project.
-     */
+    private static int bindParams(PreparedStatement ps, List<Object> params) throws SQLException {
+        int idx = 1;
+        for (Object param : params) {
+            if (param instanceof Long l) ps.setLong(idx++, l);
+            else if (param instanceof String s) ps.setString(idx++, s);
+        }
+        return idx;
+    }
+
+    static LicensePlateResponse mapRow(ResultSet rs) throws SQLException {
+        long lineId = rs.getLong("goods_receipt_line_id");
+        Long lineIdObj = rs.wasNull() ? null : lineId;
+        long locId = rs.getLong("current_storage_location_id");
+        Long locIdObj = rs.wasNull() ? null : locId;
+        long parentId = rs.getLong("parent_license_plate_id");
+        Long parentIdObj = rs.wasNull() ? null : parentId;
+        return new LicensePlateResponse(
+                rs.getLong("license_plate_id"), rs.getString("license_plate_code"), lineIdObj,
+                rs.getLong("product_id"), rs.getInt("license_plate_quantity"), rs.getString("license_plate_lot_number"),
+                rs.getLong("warehouse_id"), locIdObj, rs.getString("license_plate_status"), parentIdObj,
+                rs.getTimestamp("date_created"), rs.getTimestamp("date_modified"));
+    }
+
     public List<Long> createFromReceiptLine(long goodsReceiptLineId, List<CreateLicensePlatesRequest.Plate> plates)
             throws SQLException {
         String lockLineSql = """
@@ -46,7 +56,7 @@ public class LicensePlateRepository {
                 RETURNING license_plate_id
                 """;
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             conn.setAutoCommit(false);
             try {
                 long productId;
@@ -56,7 +66,7 @@ public class LicensePlateRepository {
                     ps.setLong(1, goodsReceiptLineId);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
-                            throw new SQLException("Goods receipt line not found: " + goodsReceiptLineId);
+                            throw new LicensePlateQuantityExceededException("Goods receipt line not found: " + goodsReceiptLineId);
                         }
                         productId = rs.getLong("product_id");
                         lineQuantity = rs.getInt("goods_receipt_line_quantity_counted");
@@ -109,21 +119,9 @@ public class LicensePlateRepository {
         }
     }
 
-    /**
-     * Thrown when the requested license plate quantities would exceed what
-     * was actually received on the line - a business-rule violation, not a
-     * database error, so it's kept separate from SQLException rather than
-     * faked through with a made-up SQLState.
-     */
-    public static class LicensePlateQuantityExceededException extends RuntimeException {
-        public LicensePlateQuantityExceededException(String message) {
-            super(message);
-        }
-    }
-
     public Optional<LicensePlateResponse> findById(long licensePlateId) throws SQLException {
         String sql = "SELECT * FROM license_plates WHERE license_plate_id = ?";
-        try (Connection conn = ConnectionPool.getDataSource().getConnection();
+        try (Connection conn = ConnectionPool.getInstance().borrow();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, licensePlateId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -132,17 +130,53 @@ public class LicensePlateRepository {
         }
     }
 
-    static LicensePlateResponse mapRow(ResultSet rs) throws SQLException {
-        long lineId = rs.getLong("goods_receipt_line_id");
-        Long lineIdObj = rs.wasNull() ? null : lineId;
-        long locId = rs.getLong("current_storage_location_id");
-        Long locIdObj = rs.wasNull() ? null : locId;
-        long parentId = rs.getLong("parent_license_plate_id");
-        Long parentIdObj = rs.wasNull() ? null : parentId;
-        return new LicensePlateResponse(
-                rs.getLong("license_plate_id"), rs.getString("license_plate_code"), lineIdObj,
-                rs.getLong("product_id"), rs.getInt("license_plate_quantity"), rs.getString("license_plate_lot_number"),
-                rs.getLong("warehouse_id"), locIdObj, rs.getString("license_plate_status"), parentIdObj,
-                rs.getTimestamp("date_created"), rs.getTimestamp("date_modified"));
+    /**
+     * NEW: was gap #4 from the inbound audit. Filterable by warehouse and/or
+     * status - e.g. "show me everything putaway_pending in warehouse 3" is
+     * the realistic query a putaway supervisor screen would actually need.
+     */
+    public PageResult<LicensePlateResponse> list(int page, int pageSize, Long warehouseId, String status)
+            throws SQLException {
+        int offset = Math.max(0, (page - 1) * pageSize);
+        StringBuilder where = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        if (warehouseId != null) {
+            where.append("WHERE warehouse_id = ?");
+            params.add(warehouseId);
+        }
+        if (status != null && !status.isBlank()) {
+            where.append(where.isEmpty() ? "WHERE " : " AND ").append("license_plate_status = ?::license_plate_status");
+            params.add(status);
+        }
+
+        String countSql = "SELECT COUNT(*) FROM license_plates " + where;
+        String listSql = "SELECT * FROM license_plates " + where + " ORDER BY license_plate_id DESC LIMIT ? OFFSET ?";
+
+        List<LicensePlateResponse> items = new ArrayList<>();
+        long total;
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
+            try (PreparedStatement ps = conn.prepareStatement(countSql)) {
+                bindParams(ps, params);
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    total = rs.getLong(1);
+                }
+            }
+            try (PreparedStatement ps = conn.prepareStatement(listSql)) {
+                int idx = bindParams(ps, params);
+                ps.setInt(idx++, pageSize);
+                ps.setInt(idx, offset);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) items.add(mapRow(rs));
+                }
+            }
+        }
+        return new PageResult<>(items, total);
+    }
+
+    public static class LicensePlateQuantityExceededException extends RuntimeException {
+        public LicensePlateQuantityExceededException(String message) {
+            super(message);
+        }
     }
 }

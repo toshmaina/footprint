@@ -1,7 +1,6 @@
 package ke.co.skyworld.internship.util.security;
 
 
-
 public class ByteUtils {
 
     public static byte[] toByteArray(Byte[] bytes) {

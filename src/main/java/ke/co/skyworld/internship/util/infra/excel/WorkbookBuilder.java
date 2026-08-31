@@ -9,7 +9,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.IOException;
 
 
-
 public class WorkbookBuilder implements AutoCloseable {
 
     private final Workbook workbook;
