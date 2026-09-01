@@ -23,6 +23,10 @@ import ke.co.skyworld.internship.controllers.handlers.licenseplate.CreateLicense
 import ke.co.skyworld.internship.controllers.handlers.licenseplate.GetLicensePlateHandler;
 import ke.co.skyworld.internship.controllers.handlers.order.CreateOrderHandler;
 import ke.co.skyworld.internship.controllers.handlers.order.GetOrderHandler;
+import ke.co.skyworld.internship.controllers.handlers.packages.AddPackageLineHandler;
+import ke.co.skyworld.internship.controllers.handlers.packages.ConfirmPackageHandler;
+import ke.co.skyworld.internship.controllers.handlers.packages.CreatePackageHandler;
+import ke.co.skyworld.internship.controllers.handlers.packages.GetPackageHandler;
 import ke.co.skyworld.internship.controllers.handlers.pickupwave.CreatePickWaveHandler;
 import ke.co.skyworld.internship.controllers.handlers.pickupwave.GetPickWaveHandler;
 import ke.co.skyworld.internship.controllers.handlers.products.*;
@@ -33,6 +37,10 @@ import ke.co.skyworld.internship.controllers.handlers.purchaseorder.ListPurchase
 import ke.co.skyworld.internship.controllers.handlers.putaway.ConfirmPutawayHandler;
 import ke.co.skyworld.internship.controllers.handlers.putaway.CreatePutawayTaskHandler;
 import ke.co.skyworld.internship.controllers.handlers.qa.RecordQaInspectionHandler;
+import ke.co.skyworld.internship.controllers.handlers.shipment.AttachPackageToShipmentHandler;
+import ke.co.skyworld.internship.controllers.handlers.shipment.CreateShipmentHandler;
+import ke.co.skyworld.internship.controllers.handlers.shipment.DispatchShipmentHandler;
+import ke.co.skyworld.internship.controllers.handlers.shipment.GetShipmentHandler;
 import ke.co.skyworld.internship.controllers.handlers.storagelocation.*;
 import ke.co.skyworld.internship.controllers.handlers.suppliers.*;
 import ke.co.skyworld.internship.controllers.handlers.warehouses.*;
@@ -242,6 +250,33 @@ public class Routes {
                 }));
     }
 
+    private static RoutingHandler packages() {
+        return Handlers.routing()
+                .add(Methods.GET, "/{id}", authed(new GetPackageHandler()))
+                .add(Methods.POST, "/", authed(new CreatePackageHandler(), "inventory.packing.write"))
+                .add(Methods.POST, "/{id}/lines", authed(new AddPackageLineHandler(), "inventory.packing.write"))
+                .add(Methods.POST, "/{id}/confirm", authed(new ConfirmPackageHandler(), "inventory.packing.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+    }
+
+    /**
+     * /shipments/{id}/dispatch is a batch operation that can touch multiple
+     * orders at once - see ShipmentRepository.dispatch()'s docs.
+     */
+    private static RoutingHandler shipments() {
+        return Handlers.routing()
+                .add(Methods.GET, "/{id}", authed(new GetShipmentHandler()))
+                .add(Methods.POST, "/", authed(new CreateShipmentHandler(), "inventory.shipping.write"))
+                .add(Methods.POST, "/{id}/packages", authed(new AttachPackageToShipmentHandler(), "inventory.shipping.write"))
+                .add(Methods.POST, "/{id}/dispatch", authed(new DispatchShipmentHandler(), "inventory.shipping.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+    }
+
+
     public static HttpHandler buildRouteHandler() {
         PathHandler path = Handlers.path();
 
@@ -260,6 +295,9 @@ public class Routes {
         path.addPrefixPath("/orders", new Dispatcher(orders()));
         path.addPrefixPath("/pick-waves", new Dispatcher(pickWaves()));
         path.addPrefixPath("/discrepancies", new Dispatcher(discrepancies()));
+        path.addPrefixPath("/packages", new Dispatcher(packages()));
+        path.addPrefixPath("/shipments", new Dispatcher(shipments()));
+
 
         return path;
     }
