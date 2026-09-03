@@ -27,6 +27,8 @@ import ke.co.skyworld.internship.controllers.handlers.packages.AddPackageLineHan
 import ke.co.skyworld.internship.controllers.handlers.packages.ConfirmPackageHandler;
 import ke.co.skyworld.internship.controllers.handlers.packages.CreatePackageHandler;
 import ke.co.skyworld.internship.controllers.handlers.packages.GetPackageHandler;
+import ke.co.skyworld.internship.controllers.handlers.picktask.ConfirmPickHandler;
+import ke.co.skyworld.internship.controllers.handlers.picktask.CreatePickTaskHandler;
 import ke.co.skyworld.internship.controllers.handlers.pickupwave.CreatePickWaveHandler;
 import ke.co.skyworld.internship.controllers.handlers.pickupwave.GetPickWaveHandler;
 import ke.co.skyworld.internship.controllers.handlers.products.*;
@@ -244,6 +246,8 @@ public class Routes {
         return Handlers.routing()
                 .add(Methods.GET, "/{id}", authed(new GetPickWaveHandler()))
                 .add(Methods.POST, "/", authed(new CreatePickWaveHandler(), "inventory.picking.write"))
+                .add(Methods.POST, "/{id}/tasks", authed(new CreatePickTaskHandler(), "inventory.picking.write"))
+                .add(Methods.POST, "/pick-tasks/{id}/confirm", authed(new ConfirmPickHandler(), "inventory.picking.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
                 .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
