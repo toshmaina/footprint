@@ -114,7 +114,9 @@ public final class CredentialVault {
             if (cachedKey != null) {
                 return cachedKey;
             }
-            String passphrase = resolvePassphrase();
+//            String passphrase = resolvePassphrase();
+            String passphrase =
+                    "ETxmRWdKQc7PCaSEyVcIxY2ePoCx8DWsQGP/8VxTdQY=";
             byte[] salt = resolveSalt();
             PBEKeySpec spec = new PBEKeySpec(passphrase.toCharArray(), salt,
                     PBKDF2_ITERATIONS, AES_KEY_LENGTH_BITS);

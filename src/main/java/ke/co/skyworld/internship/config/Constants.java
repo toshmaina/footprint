@@ -350,111 +350,67 @@ public class Constants {
     }
 
 
+
     public static class Schema {
-        public static final String MASTER = "master";
-        public static final String IDENTITY = "identity";
-        public static final String SAVINGS = "savings";
-        public static final String SHARES = "shares";
-        public static final String LENDING = "lending";
-        public static final String LEDGER = "ledger";
-        public static final String ACCOUNTING = "accounting";
-        public static final String TREASURY = "treasury";
-        public static final String RISK = "risk";
-        public static final String DOCUMENTS = "documents";
-        public static final String SCHEDULING = "scheduling";
-        public static final String AUDIT = "audit";
-        public static final String REFERENCE = "reference";
-        public static final String CONFIGURATION = "configuration";
+        public static final String PUBLIC = "public";
     }
 
     public static class Table {
-        public static final String CURRENCIES = Schema.REFERENCE + ".currencies";
-        public static final String COUNTRIES = Schema.REFERENCE + ".countries";
-        public static final String PAYMENT_METHODS = Schema.REFERENCE + ".payment_methods";
-        public static final String TRANSACTION_TYPES = Schema.REFERENCE + ".transaction_types";
-        public static final String FEE_TYPES = Schema.REFERENCE + ".fee_types";
-
-        public static final String SYSTEM_SETTINGS = Schema.CONFIGURATION + ".system_settings";
-        public static final String ACCOUNT_NUMBER_SEQUENCES = Schema.CONFIGURATION + ".account_number_sequences";
-
-        public static final String USER_ACCOUNTS = Schema.IDENTITY + ".user_accounts";
-        public static final String ROLES = Schema.IDENTITY + ".roles";
-        public static final String PERMISSIONS = Schema.IDENTITY + ".permissions";
-        public static final String ROLE_PERMISSIONS = Schema.IDENTITY + ".role_permissions";
-        public static final String USER_ROLES = Schema.IDENTITY + ".user_roles";
-        public static final String TOKENS = Schema.IDENTITY + ".tokens";
-        public static final String OTP_CODES = Schema.IDENTITY + ".otp_codes";
-        public static final String AUTHENTICATION_EVENTS = Schema.IDENTITY + ".authentication_events";
-
-        public static final String MEMBERS = Schema.MASTER + ".members";
-        public static final String MEMBER_CONTACTS = Schema.MASTER + ".member_contacts";
-        public static final String MEMBER_ADDRESSES = Schema.MASTER + ".member_addresses";
-        public static final String MEMBER_STATUS_HISTORY = Schema.MASTER + ".member_status_history";
-        public static final String MEMBER_PAYOUT_CHANNELS = Schema.MASTER + ".member_payout_channels";
-
-        public static final String SAVINGS_PRODUCTS = Schema.SAVINGS + ".savings_products";
-        public static final String SAVINGS_ACCOUNTS = Schema.SAVINGS + ".savings_accounts";
-        public static final String SAVINGS_ACCOUNT_STATUS_HISTORY = Schema.SAVINGS + ".savings_account_status_history";
-        public static final String SAVINGS_INTEREST_POSTINGS = Schema.SAVINGS + ".savings_interest_postings";
-
-        public static final String SHARE_CLASSES = Schema.SHARES + ".share_classes";
-        public static final String MEMBER_SHARES = Schema.SHARES + ".member_shares";
-        public static final String SHARE_TRANSACTIONS = Schema.SHARES + ".share_transactions";
-
-        public static final String LOAN_PRODUCTS = Schema.LENDING + ".loan_products";
-        public static final String LOANS = Schema.LENDING + ".loans";
-        public static final String LOAN_GUARANTORS = Schema.LENDING + ".loan_guarantors";
-        public static final String LOAN_PRODUCT_FEES = Schema.LENDING + ".loan_product_fees";
-        public static final String LOAN_FEE_CHARGES = Schema.LENDING + ".loan_fee_charges";
-        public static final String LOAN_SCHEDULES = Schema.LENDING + ".loan_schedules";
-        public static final String LOAN_INSTALLMENTS = Schema.LENDING + ".loan_installments";
-        public static final String LOAN_STATUS_HISTORY = Schema.LENDING + ".loan_status_history";
-        public static final String LOAN_REPAYMENTS = Schema.LENDING + ".loan_repayments";
-        public static final String LOAN_REPAYMENT_ALLOCATIONS = Schema.LENDING + ".loan_repayment_allocations";
-        public static final String LOAN_PENALTIES = Schema.LENDING + ".loan_penalties";
-        public static final String LOAN_INTEREST_ACCRUALS = Schema.LENDING + ".loan_interest_accruals";
-        public static final String LOAN_SETTLEMENTS = Schema.LENDING + ".loan_settlements";
-
-        public static final String TRANSACTIONS = Schema.LEDGER + ".transactions";
-        public static final String TRANSACTION_LINES = Schema.LEDGER + ".transaction_lines";
-        public static final String TRANSACTION_REVERSALS = Schema.LEDGER + ".transaction_reversals";
-
-        public static final String CHART_OF_ACCOUNTS = Schema.ACCOUNTING + ".chart_of_accounts";
-        public static final String ACCOUNTING_PERIODS = Schema.ACCOUNTING + ".accounting_periods";
-        public static final String JOURNAL_ENTRIES = Schema.ACCOUNTING + ".journal_entries";
-        public static final String JOURNAL_ENTRY_LINES = Schema.ACCOUNTING + ".journal_entry_lines";
-        public static final String DIVIDEND_DECLARATIONS = Schema.ACCOUNTING + ".dividend_declarations";
-        public static final String DIVIDEND_DISBURSEMENTS = Schema.ACCOUNTING + ".dividend_disbursements";
-
-        public static final String TREASURY_ACCOUNTS = Schema.TREASURY + ".treasury_accounts";
-        public static final String PESA_IN = Schema.TREASURY + ".pesa_in";
-        public static final String PESA_OUT = Schema.TREASURY + ".pesa_out";
-
-        public static final String LOAN_RISK_CLASSIFICATIONS = Schema.RISK + ".loan_risk_classifications";
-        public static final String IMPAIRMENT_ASSESSMENTS = Schema.RISK + ".impairment_assessments";
-        public static final String EXPECTED_CREDIT_LOSSES = Schema.RISK + ".expected_credit_losses";
-        public static final String WRITE_OFFS = Schema.RISK + ".write_offs";
-
-        public static final String FILE_UPLOADS = Schema.DOCUMENTS + ".file_uploads";
-        public static final String DOCUMENT_LINKS = Schema.DOCUMENTS + ".document_links";
-
-        public static final String QRTZ_JOB_DETAILS = Schema.SCHEDULING + ".qrtz_job_details";
-        public static final String QRTZ_TRIGGERS = Schema.SCHEDULING + ".qrtz_triggers";
-        public static final String QRTZ_SIMPLE_TRIGGERS = Schema.SCHEDULING + ".qrtz_simple_triggers";
-        public static final String QRTZ_CRON_TRIGGERS = Schema.SCHEDULING + ".qrtz_cron_triggers";
-        public static final String QRTZ_SIMPROP_TRIGGERS = Schema.SCHEDULING + ".qrtz_simprop_triggers";
-        public static final String QRTZ_BLOB_TRIGGERS = Schema.SCHEDULING + ".qrtz_blob_triggers";
-        public static final String QRTZ_CALENDARS = Schema.SCHEDULING + ".qrtz_calendars";
-        public static final String QRTZ_PAUSED_TRIGGER_GRPS = Schema.SCHEDULING + ".qrtz_paused_trigger_grps";
-        public static final String QRTZ_FIRED_TRIGGERS = Schema.SCHEDULING + ".qrtz_fired_triggers";
-        public static final String QRTZ_SCHEDULER_STATE = Schema.SCHEDULING + ".qrtz_scheduler_state";
-        public static final String QRTZ_LOCKS = Schema.SCHEDULING + ".qrtz_locks";
-
-        public static final String AUDIT_EVENTS = Schema.AUDIT + ".audit_events";
-        public static final String DATA_CHANGE_EVENTS = Schema.AUDIT + ".data_change_events";
+        public static final String ACCESS_TOKENS = Schema.PUBLIC + ".access_tokens";
+        public static final String ADJUSTMENT_REASON_CODES = Schema.PUBLIC + ".adjustment_reason_codes";
+        public static final String ADVANCE_SHIPPING_NOTICE_LINES = Schema.PUBLIC + ".advance_shipping_notice_lines";
+        public static final String ADVANCE_SHIPPING_NOTICES = Schema.PUBLIC + ".advance_shipping_notices";
+        public static final String BACKORDERS = Schema.PUBLIC + ".backorders";
+        public static final String CUSTOMERS = Schema.PUBLIC + ".customers";
+        public static final String CYCLE_COUNT_RESULT_LINES = Schema.PUBLIC + ".cycle_count_result_lines";
+        public static final String CYCLE_COUNT_SCHEDULES = Schema.PUBLIC + ".cycle_count_schedules";
+        public static final String CYCLE_COUNT_TASK_LINES = Schema.PUBLIC + ".cycle_count_task_lines";
+        public static final String CYCLE_COUNT_TASKS = Schema.PUBLIC + ".cycle_count_tasks";
+        public static final String CYCLE_COUNT_VARIANCE_REVIEWS = Schema.PUBLIC + ".cycle_count_variance_reviews";
+        public static final String DOCK_APPOINTMENTS = Schema.PUBLIC + ".dock_appointments";
+        public static final String GOODS_RECEIPT_DISCREPANCIES = Schema.PUBLIC + ".goods_receipt_discrepancies";
+        public static final String GOODS_RECEIPT_LINES = Schema.PUBLIC + ".goods_receipt_lines";
+        public static final String GOODS_RECEIPTS = Schema.PUBLIC + ".goods_receipts";
+        public static final String INTERNAL_TRANSFER_LINES = Schema.PUBLIC + ".internal_transfer_lines";
+        public static final String INTERNAL_TRANSFER_REQUESTS = Schema.PUBLIC + ".internal_transfer_requests";
+        public static final String INVENTORY_ADJUSTMENT_LINES = Schema.PUBLIC + ".inventory_adjustment_lines";
+        public static final String INVENTORY_ADJUSTMENTS = Schema.PUBLIC + ".inventory_adjustments";
+        public static final String INVOICE_LINES = Schema.PUBLIC + ".invoice_lines";
+        public static final String INVOICES = Schema.PUBLIC + ".invoices";
+        public static final String LICENSE_PLATES = Schema.PUBLIC + ".license_plates";
+        public static final String ORDER_LINES = Schema.PUBLIC + ".order_lines";
+        public static final String ORDERS = Schema.PUBLIC + ".orders";
+        public static final String PACKAGE_LINES = Schema.PUBLIC + ".package_lines";
+        public static final String PACKAGES = Schema.PUBLIC + ".packages";
+        public static final String PAYMENT_APPLICATIONS = Schema.PUBLIC + ".payment_applications";
+        public static final String PAYMENTS = Schema.PUBLIC + ".payments";
+        public static final String PERMISSIONS = Schema.PUBLIC + ".permissions";
+        public static final String PICK_CONFIRMATIONS = Schema.PUBLIC + ".pick_confirmations";
+        public static final String PICK_TASKS = Schema.PUBLIC + ".pick_tasks";
+        public static final String PICK_WAVE_ASSIGNMENTS = Schema.PUBLIC + ".pick_wave_assignments";
+        public static final String PICK_WAVES = Schema.PUBLIC + ".pick_waves";
+        public static final String PRODUCTS = Schema.PUBLIC + ".products";
+        public static final String PURCHASE_ORDER_LINES = Schema.PUBLIC + ".purchase_order_lines";
+        public static final String PURCHASE_ORDERS = Schema.PUBLIC + ".purchase_orders";
+        public static final String PUTAWAY_CONFIRMATIONS = Schema.PUBLIC + ".putaway_confirmations";
+        public static final String PUTAWAY_TASKS = Schema.PUBLIC + ".putaway_tasks";
+        public static final String QUALITY_ASSURANCE_INSPECTION_RESULTS = Schema.PUBLIC + ".quality_assurance_inspection_results";
+        public static final String QUALITY_ASSURANCE_INSPECTIONS = Schema.PUBLIC + ".quality_assurance_inspections";
+        public static final String REPLENISHMENT_RULES = Schema.PUBLIC + ".replenishment_rules";
+        public static final String RETURN_LINES = Schema.PUBLIC + ".return_lines";
+        public static final String RETURNS = Schema.PUBLIC + ".returns";
+        public static final String ROLE_PERMISSIONS = Schema.PUBLIC + ".role_permissions";
+        public static final String ROLES = Schema.PUBLIC + ".roles";
+        public static final String SHIPMENT_PACKAGES = Schema.PUBLIC + ".shipment_packages";
+        public static final String SHIPMENTS = Schema.PUBLIC + ".shipments";
+        public static final String STOCK_MOVEMENTS = Schema.PUBLIC + ".stock_movements";
+        public static final String STOCK_RESERVATIONS = Schema.PUBLIC + ".stock_reservations";
+        public static final String STORAGE_LOCATIONS = Schema.PUBLIC + ".storage_locations";
+        public static final String SUPPLIERS = Schema.PUBLIC + ".suppliers";
+        public static final String USER_ACCOUNTS = Schema.PUBLIC + ".user_accounts";
+        public static final String USER_ROLES = Schema.PUBLIC + ".user_roles";
+        public static final String WAREHOUSES = Schema.PUBLIC + ".warehouses";
 
         private Table() {
         }
-    }
-
-}
+}}
