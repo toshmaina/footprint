@@ -23,7 +23,7 @@ public class PackageRepository {
 
     public long create(long orderId) throws SQLException {
         String sql = "INSERT INTO packages (order_id, package_status) VALUES (?, 'packing') RETURNING package_id";
-        try (Connection conn = ConnectionPool.getDataSource().getConnection();
+        try (Connection conn = ConnectionPool.getInstance().borrow();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, orderId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -42,7 +42,7 @@ public class PackageRepository {
      * Also verifies the order line actually belongs to this package's order.
      */
     public long addLine(long packageId, long orderLineId, int quantity) throws SQLException {
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             conn.setAutoCommit(false);
             try {
                 long packageOrderId;
@@ -117,7 +117,7 @@ public class PackageRepository {
     public boolean confirmPack(long packageId, BigDecimal weight) throws SQLException {
         String sql = "UPDATE packages SET package_weight = ?, package_status = 'packed' " +
                 "WHERE package_id = ? AND package_status = 'packing'";
-        try (Connection conn = ConnectionPool.getDataSource().getConnection();
+        try (Connection conn = ConnectionPool.getInstance().borrow();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             if (weight != null) ps.setBigDecimal(1, weight); else ps.setNull(1, Types.NUMERIC);
             ps.setLong(2, packageId);
@@ -129,7 +129,7 @@ public class PackageRepository {
         String headerSql = "SELECT * FROM packages WHERE package_id = ?";
         String linesSql = "SELECT * FROM package_lines WHERE package_id = ? ORDER BY package_line_id";
 
-        try (Connection conn = ConnectionPool.getDataSource().getConnection()) {
+        try (Connection conn = ConnectionPool.getInstance().borrow()) {
             long orderId;
             BigDecimal weight;
             String status;

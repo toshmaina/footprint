@@ -125,7 +125,7 @@ public class EmailService {
                 "otpCode", otp,
                 "otpExpiryMinutes", Constants.getOtpTtlMinutes()
         );
-        sendAsync(toEmail, "Verify your Sky-Core account", "mail/verification-otp.ftl", model);
+        sendAsync(toEmail, "Verify your Sky-Core account", "templates/mail/verification-otp.ftl", model);
     }
 
     public void sendLoginMfaOtp(String toEmail, String name, String otp) {
@@ -134,7 +134,7 @@ public class EmailService {
                 "otpCode", otp,
                 "otpExpiryMinutes", Constants.getOtpTtlMinutes()
         );
-        sendAsync(toEmail, "Your Sky-Core sign-in code", "mail/login-mfa-otp.ftl", model);
+        sendAsync(toEmail, "Your Sky-Core sign-in code", "templates/mail/login-mfa-otp.ftl", model);
     }
 
     public void sendPasswordReset(String toEmail, String name, String resetLink) {
@@ -143,22 +143,22 @@ public class EmailService {
                 "resetLink", resetLink,
                 "expiryMinutes", Constants.getPasswordResetTtlMinutes()
         );
-        sendAsync(toEmail, "Reset your Sky-Core password", "mail/password-reset.ftl", model);
+        sendAsync(toEmail, "Reset your Sky-Core password", "templates/mail/password-reset.ftl", model);
     }
 
     public void sendWelcome(String toEmail, String name) {
         Map<String, Object> model = Map.of("name", name);
-        sendAsync(toEmail, "Welcome to Sky-Core", "mail/welcome.ftl", model);
+        sendAsync(toEmail, "Welcome to Sky-Core", "templates/mail/welcome.ftl", model);
     }
 
     public void sendKycApproved(String toEmail, String name) {
         Map<String, Object> model = Map.of("name", name);
-        sendAsync(toEmail, "Your Sky-Core account is verified", "mail/kyc-approved.ftl", model);
+        sendAsync(toEmail, "Your Sky-Core account is verified", "templates/mail/kyc-approved.ftl", model);
     }
 
     public void sendKycRejected(String toEmail, String name, String reason) {
         Map<String, Object> model = Map.of("name", name, "reason", reason);
-        sendAsync(toEmail, "Action needed on your Sky-Core verification", "mail/kyc-rejected.ftl", model);
+        sendAsync(toEmail, "Action needed on your Sky-Core verification", "templates/mail/kyc-rejected.ftl", model);
     }
 
     public void sendWithAttachment(String to, String subject, String htmlBody,
@@ -196,7 +196,7 @@ public class EmailService {
         });
     }
 
-    private void doSend(String to, String subject, String htmlBody) throws Exception {
+    public void doSend(String to, String subject, String htmlBody) throws Exception {
         Session session = buildSession();
 
         Message message = new MimeMessage(session);
@@ -253,5 +253,6 @@ public class EmailService {
             }
         });
     }
+
 }
 
