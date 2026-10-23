@@ -7,7 +7,7 @@ public enum LoggingLevel {
     WARNING("WARNING"),
     ERROR("ERROR");
 
-    private String value;
+    private final String value;
 
     LoggingLevel(String value) {
         this.value = value;

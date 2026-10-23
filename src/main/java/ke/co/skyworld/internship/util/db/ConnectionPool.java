@@ -104,4 +104,8 @@ public final class ConnectionPool {
     public int pendingThreads() {
         return dataSource.getHikariPoolMXBean().getThreadsAwaitingConnection();
     }
+
+    public int getActiveConnections() {
+        return dataSource.getHikariPoolMXBean().getActiveConnections();
+    }
 }

@@ -1,13 +1,14 @@
 package ke.co.skyworld.internship.controllers.handlers.cyclecount;
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.count_cycles.CycleCountScheduleRequest;
 import ke.co.skyworld.internship.repository.CycleCountRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Set;
 
 public class CreateCycleCountScheduleHandler extends SkyInventoryManagementHttpHandler {
@@ -26,17 +27,17 @@ public class CreateCycleCountScheduleHandler extends SkyInventoryManagementHttpH
             return;
         }
 
-        if (request == null || request.getWarehouseId() == null || request.getProductClassification() == null
-                || !VALID_CLASSIFICATIONS.contains(request.getProductClassification())
-                || request.getCountFrequencyDays() == null || request.getCountFrequencyDays() <= 0) {
+        if (request == null || request.warehouseId() == null || request.productClassification() == null
+                || !VALID_CLASSIFICATIONS.contains(request.productClassification())
+                || request.countFrequencyDays() == null || request.countFrequencyDays() <= 0) {
             sendError(exchange, "warehouseId, productClassification (A/B/C), and a positive countFrequencyDays are required", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            long id = cycleCountRepository.createSchedule(request.getWarehouseId(), request.getProductClassification(),
-                    request.getCountFrequencyDays());
-            send(exchange, java.util.Map.of("scheduleId", id), StatusCodes.CREATED);
+            long id = cycleCountRepository.createSchedule(request.warehouseId(), request.productClassification(),
+                    request.countFrequencyDays());
+            send(exchange, Map.of("scheduleId", id), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23505".equals(e.getSQLState())) {
                 sendError(exchange, "A schedule already exists for this warehouse and classification", StatusCodes.CONFLICT);

@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class UID {
     private static final SecureRandom RANDOM = new SecureRandom();
-    private String salt = "abcdefghijklmnopqrstuvwxyz@#$!%^&*(*)1234567890";
+    private final String salt = "abcdefghijklmnopqrstuvwxyz@#$!%^&*(*)1234567890";
 
     public static String generateToken(int length) {
         if (length <= 32) {

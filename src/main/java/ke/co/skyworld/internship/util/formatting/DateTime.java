@@ -488,27 +488,12 @@ public class DateTime {
         );
     }
 
-    public static class DateTimeRange {
-        private final LocalDateTime start;
-        private final LocalDateTime end;
-
-        public DateTimeRange(LocalDateTime start, LocalDateTime end) {
-            this.start = start;
-            this.end = end;
-        }
-
-        public LocalDateTime getStart() {
-            return start;
-        }
-
-        public LocalDateTime getEnd() {
-            return end;
-        }
+    public record DateTimeRange(LocalDateTime start, LocalDateTime end) {
 
         public boolean isValid() {
-            return start != null && end != null && start.isBefore(end);
+                return start != null && end != null && start.isBefore(end);
+            }
         }
-    }
 
 
 }

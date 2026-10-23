@@ -83,7 +83,7 @@ public class LicensePlateRepository {
                     }
                 }
 
-                int requestedTotal = plates.stream().mapToInt(CreateLicensePlatesRequest.Plate::getQuantity).sum();
+                int requestedTotal = plates.stream().mapToInt(CreateLicensePlatesRequest.Plate::quantity).sum();
                 if (existingTotal + requestedTotal > lineQuantity) {
                     throw new LicensePlateQuantityExceededException(
                             "License plate quantities (" + (existingTotal + requestedTotal)
@@ -93,12 +93,12 @@ public class LicensePlateRepository {
                 List<Long> createdIds = new ArrayList<>();
                 try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
                     for (CreateLicensePlatesRequest.Plate plate : plates) {
-                        ps.setString(1, plate.getCode());
+                        ps.setString(1, plate.code());
                         ps.setLong(2, goodsReceiptLineId);
                         ps.setLong(3, productId);
-                        ps.setInt(4, plate.getQuantity());
-                        if (plate.getLotNumber() != null && !plate.getLotNumber().isBlank()) {
-                            ps.setString(5, plate.getLotNumber());
+                        ps.setInt(4, plate.quantity());
+                        if (plate.lotNumber() != null && !plate.lotNumber().isBlank()) {
+                            ps.setString(5, plate.lotNumber());
                         } else {
                             ps.setNull(5, Types.VARCHAR);
                         }

@@ -2,11 +2,7 @@ package ke.co.skyworld.internship.repository;
 
 import ke.co.skyworld.internship.util.logging.Log;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;

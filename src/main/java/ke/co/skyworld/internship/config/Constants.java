@@ -399,7 +399,7 @@ public class Constants {
         public static final String PERMISSIONS = Schema.IDENTITY + ".permissions";
         public static final String ROLE_PERMISSIONS = Schema.IDENTITY + ".role_permissions";
         public static final String USER_ROLES = Schema.IDENTITY + ".user_roles";
-        public static final String TOKENS = Schema.IDENTITY + ".tokens";
+        public static final String TOKENS = Schema.IDENTITY + ".access_tokens";
         public static final String OTP_CODES = Schema.IDENTITY + ".otp_codes";
         public static final String AUTHENTICATION_EVENTS = Schema.IDENTITY + ".authentication_events";
 

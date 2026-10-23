@@ -65,12 +65,16 @@ public class Routes {
         return new AuthMiddleware(handler, requiredPermissions);
     }
 
+    public static HttpHandler rateLimited(HttpHandler handler) {
+        return new RateLimiterMiddleware(handler);
+    }
+
     private static RoutingHandler auth() {
         return Handlers.routing()
                 .add(Methods.POST, "/register", authed(new RegisterHandler(), "identity.users.create"))
                 .add(Methods.POST, "/login", new LoginHandler())
                 .add(Methods.POST, "/refresh", new RefreshHandler())
-                .add(Methods.POST, "/logout", authed(new LogoutHandler()))
+                .add(Methods.POST, "/logout", new LogoutHandler())
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
                 .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {

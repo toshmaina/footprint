@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 
 import static ke.co.skyworld.internship.config.Constants.*;
 import static ke.co.skyworld.internship.controllers.Routes.buildRouteHandler;
+import static ke.co.skyworld.internship.controllers.Routes.rateLimited;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
@@ -110,7 +111,7 @@ public class Main {
                 .setIoThreads(getIoThreadPool())
                 .setWorkerThreads(getWorkerThreadPool())
                 .addHttpListener(getApiContextPort(), getApiContextHost())
-                .setHandler(buildRouteHandler())
+                .setHandler(rateLimited(buildRouteHandler()))
                 .build();
     }
 
@@ -154,11 +155,10 @@ public class Main {
         String base = getApiContextPath();
         String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        var mx = ConnectionPool.getDataSource().getHikariPoolMXBean();
-        int total = mx.getTotalConnections();
-        int idle = mx.getIdleConnections();
-        int active = mx.getActiveConnections();
-        int pending = mx.getThreadsAwaitingConnection();
+        int total = ConnectionPool.getInstance().totalConnections();
+        int idle = ConnectionPool.getInstance().availableConnections();
+        int active = ConnectionPool.getInstance().getActiveConnections();
+        int pending = ConnectionPool.getInstance().pendingThreads();
         String db = getDbHost() + ":" + getDbPort() + "/" + getDbName();
         String pool = "min=" + getDbPoolMin() + " max=" + getDbPoolMax()
                 + "  @|faint active=" + active + " idle=" + idle

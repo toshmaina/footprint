@@ -8,6 +8,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
+import io.undertow.util.AttachmentKey;
 import io.undertow.util.Headers;
 import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;
@@ -31,6 +32,8 @@ import static ke.co.skyworld.internship.util.formatting.Converter.getObjectMappe
 
 
 public class SkyInventoryManagementHttpHandler implements HttpHandler {
+
+    public static final AttachmentKey<Long> REQUEST_START_TIME = AttachmentKey.create(Long.class);
 
     public static String getQueryParam(HttpServerExchange exchange, String key) {
         Deque<String> param = exchange.getQueryParameters().get(key);
@@ -324,7 +327,7 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
         for (String key : keys) {
             param = exchange.getQueryParameters().get(key);
 
-            if (param != null && !param.getFirst().equals("")) {
+            if (param != null && !param.getFirst().isEmpty()) {
                 params.put(key, param.getFirst());
             }
         }
@@ -370,10 +373,8 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
     }
 
     public String getClientIp(HttpServerExchange exchange) {
-        String xff = exchange.getRequestHeaders().getFirst("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) return xff.split(",")[0].trim();
-        var addr = exchange.getSourceAddress();
-        return addr != null ? addr.getAddress().getHostAddress() : null;
+        InetSocketAddress addr = exchange.getSourceAddress();
+        return addr != null ? addr.getAddress() != null ? addr.getAddress().getHostAddress() : null : null;
     }
 
     @Override

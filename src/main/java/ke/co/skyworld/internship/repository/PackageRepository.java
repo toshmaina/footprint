@@ -4,22 +4,12 @@ import ke.co.skyworld.internship.domain.beans.packages.PackageResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class PackageRepository {
-
-    public static class InvalidStateException extends RuntimeException {
-        public InvalidStateException(String message) {
-            super(message);
-        }
-    }
 
     public long create(long orderId) throws SQLException {
         String sql = "INSERT INTO packages (order_id, package_status) VALUES (?, 'packing') RETURNING package_id";
@@ -119,7 +109,8 @@ public class PackageRepository {
                 "WHERE package_id = ? AND package_status = 'packing'";
         try (Connection conn = ConnectionPool.getDataSource().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            if (weight != null) ps.setBigDecimal(1, weight); else ps.setNull(1, Types.NUMERIC);
+            if (weight != null) ps.setBigDecimal(1, weight);
+            else ps.setNull(1, Types.NUMERIC);
             ps.setLong(2, packageId);
             return ps.executeUpdate() > 0;
         }
@@ -157,6 +148,12 @@ public class PackageRepository {
             }
 
             return Optional.of(new PackageResponse(packageId, orderId, weight, status, lines, created));
+        }
+    }
+
+    public static class InvalidStateException extends RuntimeException {
+        public InvalidStateException(String message) {
+            super(message);
         }
     }
 }

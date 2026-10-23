@@ -3,23 +3,14 @@ package ke.co.skyworld.internship.repository;
 import ke.co.skyworld.internship.domain.beans.shipment.ShipmentResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.sql.*;
+import java.util.*;
 
 public class ShipmentRepository {
 
-    public static class InvalidStateException extends RuntimeException {
-        public InvalidStateException(String message) {
-            super(message);
-        }
+    private static void setNullableString(PreparedStatement ps, int index, String value) throws SQLException {
+        if (value != null && !value.isBlank()) ps.setString(index, value);
+        else ps.setNull(index, Types.VARCHAR);
     }
 
     public long create(long warehouseId, String carrier, String trackingNumber) throws SQLException {
@@ -253,8 +244,9 @@ public class ShipmentRepository {
         }
     }
 
-    private static void setNullableString(PreparedStatement ps, int index, String value) throws SQLException {
-        if (value != null && !value.isBlank()) ps.setString(index, value);
-        else ps.setNull(index, Types.VARCHAR);
+    public static class InvalidStateException extends RuntimeException {
+        public InvalidStateException(String message) {
+            super(message);
+        }
     }
 }
