@@ -107,7 +107,7 @@ public class PickTaskRepository {
                         INSERT INTO pick_tasks
                             (pick_wave_id, storage_location_id, product_id, pick_task_quantity_requested,
                              pick_task_assigned_to, pick_task_status, license_plate_id, order_line_id)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        VALUES (?, ?, ?, ?, ?, ?::pick_task_status, ?, ?)
                         RETURNING pick_task_id
                         """)) {
                     ps.setLong(1, pickWaveId);

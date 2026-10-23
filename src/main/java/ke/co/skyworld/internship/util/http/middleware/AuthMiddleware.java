@@ -4,6 +4,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.enums.TokenType;
+import ke.co.skyworld.internship.domain.enums.UserAccountStatus;
 import ke.co.skyworld.internship.repository.PermissionRepository;
 import ke.co.skyworld.internship.repository.TokenRepository;
 import ke.co.skyworld.internship.repository.UserAccountRepository;
@@ -57,14 +58,13 @@ public class AuthMiddleware implements HttpHandler {
 
             UserAccountRepository.AuthSnapshot snapshot = userAccountRepository.findAuthSnapshot(userAccountId);
             if (snapshot == null) {
-                // Token pointed at a user_account row that no longer exists -
-                // treat identically to an invalid token, not a server error.
                 SkyInventoryManagementHttpHandler.sendError(exchange, "Invalid or expired access token", StatusCodes.UNAUTHORIZED);
                 return;
             }
-            if (!"active".equalsIgnoreCase(snapshot.status())) {
+
+            if (!UserAccountStatus.ACTIVE.equals(snapshot.status())) {
                 SkyInventoryManagementHttpHandler.sendError(exchange,
-                        "This account is " + snapshot.status().toLowerCase() + " and cannot access the API",
+                        "This account is " + snapshot.status() + " and cannot access the API",
                         StatusCodes.FORBIDDEN);
                 return;
             }
