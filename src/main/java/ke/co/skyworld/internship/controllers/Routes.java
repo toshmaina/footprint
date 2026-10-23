@@ -52,6 +52,9 @@ import ke.co.skyworld.internship.util.http.FallBack;
 import ke.co.skyworld.internship.util.http.InvalidMethod;
 import ke.co.skyworld.internship.util.http.middleware.AuthMiddleware;
 
+import static ke.co.skyworld.internship.util.metrics.Metrics.metricsHandler;
+import ke.co.skyworld.internship.util.http.middleware.RateLimiterMiddleware;
+
 public class Routes {
 
     private static HttpHandler authed(HttpHandler handler) {
@@ -262,7 +265,8 @@ public class Routes {
                 .add(Methods.POST, "/{id}/confirm", authed(new ConfirmPackageHandler(), "inventory.packing.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
     /**
@@ -277,12 +281,13 @@ public class Routes {
                 .add(Methods.POST, "/{id}/dispatch", authed(new DispatchShipmentHandler(), "inventory.shipping.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
-                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {}));
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
     }
 
 
     public static HttpHandler buildRouteHandler() {
-        PathHandler path = Handlers.path();
+        PathHandler path = Handlers.path(new FallBack());
 
         path.addPrefixPath("/auth", new Dispatcher(auth()));
         path.addPrefixPath("/products", new Dispatcher(products()));
@@ -301,6 +306,7 @@ public class Routes {
         path.addPrefixPath("/discrepancies", new Dispatcher(discrepancies()));
         path.addPrefixPath("/packages", new Dispatcher(packages()));
         path.addPrefixPath("/shipments", new Dispatcher(shipments()));
+        path.addPrefixPath("/metrics", metricsHandler());
 
 
         return path;
