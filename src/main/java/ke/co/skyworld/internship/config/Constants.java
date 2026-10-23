@@ -81,6 +81,10 @@ public class Constants {
     public static String XML_PATH_TO_CORS_EXPOSED_HEADERS = "/api/cors/exposed_headers";
     public static String XML_PATH_TO_CORS_ALLOW_CREDENTIALS = "/api/cors/allow_credentials";
     public static String XML_PATH_TO_CORS_MAX_AGE_SECONDS = "/api/cors/max_age_seconds";
+    public static String XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_CAPACITY = "/api/rate_limiting/bucket_capacity";
+    public static String XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_AMOUNT = "/api/rate_limiting/bucket_refill_amount";
+    public static String XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME = "/api/rate_limiting/bucket_refill_time";
+    public static String XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME_UNIT = "/api/rate_limiting/bucket_refill_time/@unit";
 
     public static boolean dumpRequest() {
         return XmlUtils.readXMLTag(XML_PATH_TO_API_REQUEST_DUMP).equalsIgnoreCase("true");
@@ -125,6 +129,19 @@ public class Constants {
     public static String getDbPass() {
         return CredentialVault.resolvePlaintext(XML_PATH_TO_DB_PASS);
     }
+    public static Long getRateLimitTokenBucketCapacity() {
+        return Long.parseLong(XmlUtils.readXMLTag(XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_CAPACITY));
+    }
+    public static Long getRateLimitTokenBucketRefillAmount() {
+        return Long.parseLong(XmlUtils.readXMLTag(XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_AMOUNT));
+    }
+    public static int getRateLimitTokenBucketRefillTime() {
+        return Integer.parseInt(XmlUtils.readXMLTag(XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME));
+    }
+    public static String getRateLimitTokenBucketRefillTimeUnit() {
+        return XmlUtils.readXMLTag(XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME_UNIT);
+    }
+
 
     public static int getDbPoolMin() {
         String val = XmlUtils.readXMLTag(XML_PATH_TO_DB_POOL_MIN);

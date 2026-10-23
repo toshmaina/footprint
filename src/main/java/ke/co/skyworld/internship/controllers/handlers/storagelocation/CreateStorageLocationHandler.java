@@ -9,6 +9,7 @@ import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Set;
 
 public class CreateStorageLocationHandler extends SkyInventoryManagementHttpHandler {
@@ -32,24 +33,24 @@ public class CreateStorageLocationHandler extends SkyInventoryManagementHttpHand
             return;
         }
 
-        if (request == null || request.getWarehouseId() == null || isBlank(request.getBinCode())
-                || isBlank(request.getLocationType())) {
+        if (request == null || request.warehouseId() == null || isBlank(request.binCode())
+                || isBlank(request.locationType())) {
             sendError(exchange, "warehouseId, binCode, and locationType are required", StatusCodes.BAD_REQUEST);
             return;
         }
-        if (!VALID_TYPES.contains(request.getLocationType())) {
+        if (!VALID_TYPES.contains(request.locationType())) {
             sendError(exchange, "locationType must be one of " + VALID_TYPES, StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            if (storageLocationRepository.binCodeExists(request.getWarehouseId(), request.getBinCode())) {
+            if (storageLocationRepository.binCodeExists(request.warehouseId(), request.binCode())) {
                 sendError(exchange, "A storage location with this bin code already exists in this warehouse", StatusCodes.CONFLICT);
                 return;
             }
-            long id = storageLocationRepository.create(request.getWarehouseId(), request.getZone(),
-                    request.getAisle(), request.getRack(), request.getBinCode(), request.getLocationType());
-            send(exchange, java.util.Map.of("storageLocationId", id), StatusCodes.CREATED);
+            long id = storageLocationRepository.create(request.warehouseId(), request.zone(),
+                    request.aisle(), request.rack(), request.binCode(), request.locationType());
+            send(exchange, Map.of("storageLocationId", id), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23505".equals(e.getSQLState())) {
                 sendError(exchange, "A storage location with this bin code already exists in this warehouse", StatusCodes.CONFLICT);

@@ -25,26 +25,26 @@ public class CreatePurchaseOrderHandler extends SkyInventoryManagementHttpHandle
             return;
         }
 
-        if (request == null || request.getSupplierId() == null || request.getWarehouseId() == null) {
+        if (request == null || request.supplierId() == null || request.warehouseId() == null) {
             sendError(exchange, "supplierId and warehouseId are required", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request.getLines() == null || request.getLines().isEmpty()) {
+        if (request.lines() == null || request.lines().isEmpty()) {
             sendError(exchange, "A purchase order must have at least one line", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        for (PurchaseOrderRequest.Line line : request.getLines()) {
-            if (line.getProductId() == null || line.getQuantityOrdered() == null || line.getUnitCost() == null) {
+        for (PurchaseOrderRequest.Line line : request.lines()) {
+            if (line.productId() == null || line.quantityOrdered() == null || line.unitCost() == null) {
                 sendError(exchange, "Each line requires productId, quantityOrdered, and unitCost", StatusCodes.BAD_REQUEST);
                 return;
             }
-            if (line.getQuantityOrdered() <= 0) {
+            if (line.quantityOrdered() <= 0) {
                 sendError(exchange, "quantityOrdered must be positive", StatusCodes.BAD_REQUEST);
                 return;
             }
-            if (line.getUnitCost().signum() < 0) {
+            if (line.unitCost().signum() < 0) {
                 sendError(exchange, "unitCost cannot be negative", StatusCodes.BAD_REQUEST);
                 return;
             }
@@ -60,8 +60,8 @@ public class CreatePurchaseOrderHandler extends SkyInventoryManagementHttpHandle
 
         try {
             long purchaseOrderId = purchaseOrderRepository.createWithLines(
-                    request.getSupplierId(), request.getWarehouseId(), request.getExpectedDate(),
-                    createdBy, request.getLines());
+                    request.supplierId(), request.warehouseId(), request.expectedDate(),
+                    createdBy, request.lines());
             send(exchange, java.util.Map.of("purchaseOrderId", purchaseOrderId), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23503".equals(e.getSQLState())) {

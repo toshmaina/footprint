@@ -9,7 +9,7 @@ set -euo pipefail
 BASE_URL="${BASE_URL:-http://localhost:8080}"
 ACCESS_TOKEN="${ACCESS_TOKEN:?Set ACCESS_TOKEN to a valid admin token first}"
 CUSTOMER_ID="${CUSTOMER_ID:?Set CUSTOMER_ID to a customer whose default warehouse holds the test stock}"
-PRODUCT_ID="${PRODUCT_ID:?Set PRODUCT_ID to the SKU's product_id (should have exactly 10 available)}"
+PRODUCT_ID="${PRODUCT_ID:?Set PRODUCT_ID to the SKUs product_id (should have exactly 10 available)}"
 
 echo "Firing 50 concurrent 1-unit orders for product $PRODUCT_ID..."
 
@@ -22,7 +22,7 @@ for i in $(seq 1 50); do
       -X POST "$BASE_URL/orders" \
       -H "Authorization: Bearer $ACCESS_TOKEN" \
       -H "Content-Type: application/json" \
-      -d "{\"customerId\": $CUSTOMER_ID, \"lines\": [{\"productId\": $PRODUCT_ID, \"quantityOrdered\": 1}]}" \
+      -d "{\"customer_id\": $CUSTOMER_ID, \"lines\": [{\"product_id\": $PRODUCT_ID, \"quantity_ordered\": 1}]}" \
       > "$outdir/status_$i.txt"
   ) &
   pids+=($!)
@@ -35,14 +35,15 @@ done
 echo ""
 echo "All 50 requests completed. Analyzing results..."
 
-reserved_count=$(grep -l '"status":"reserved"' "$outdir"/resp_*.json 2>/dev/null | wc -l)
-backordered_count=$(grep -l '"status":"backordered"' "$outdir"/resp_*.json 2>/dev/null | wc -l)
+reserved_count=$(grep -l '"status":"reserved"' "$outdir"/resp_*.json 2>/dev/null | wc -l) || true
+backordered_count=$(grep -l '"status":"backordered"' "$outdir"/resp_*.json 2>/dev/null | wc -l) || true
 
 echo "Reserved:    $reserved_count  (expected: 10)"
 echo "Backordered: $backordered_count  (expected: 40)"
 
 if [ "$reserved_count" -eq 10 ] && [ "$backordered_count" -eq 40 ]; then
   echo "PASS: exactly 10 reserved, 0 oversold."
+  rm -rf "$outdir"
 else
   echo "FAIL: counts don't match expected 10/40 split - inspect $outdir for individual responses."
 fi
@@ -63,6 +64,3 @@ echo "  AND stock_reservation_status = 'active';"
 echo ""
 echo "This should return 0 after this test - that's the actual acceptance"
 echo "criterion, not the stock report endpoint's raw number."
-
-
-rm -rf "$outdir"

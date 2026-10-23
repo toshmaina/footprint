@@ -77,9 +77,9 @@ public class PurchaseOrderRepository {
                 try (PreparedStatement ps = conn.prepareStatement(lineSql)) {
                     for (PurchaseOrderRequest.Line line : lines) {
                         ps.setLong(1, purchaseOrderId);
-                        ps.setLong(2, line.getProductId());
-                        ps.setInt(3, line.getQuantityOrdered());
-                        ps.setBigDecimal(4, line.getUnitCost());
+                        ps.setLong(2, line.productId());
+                        ps.setInt(3, line.quantityOrdered());
+                        ps.setBigDecimal(4, line.unitCost());
                         ps.addBatch();
                     }
                     ps.executeBatch();
@@ -114,7 +114,7 @@ public class PurchaseOrderRepository {
                 ps.setLong(1, purchaseOrderId);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        header.getLines().add(mapLine(rs));
+                        header.lines().add(mapLine(rs));
                     }
                 }
             }
@@ -156,7 +156,7 @@ public class PurchaseOrderRepository {
      * Only allowed from 'draft' or 'sent' - once anything has been received
      * against a PO, cancelling it would contradict physical reality (stock
      * already arrived). Returns false if the PO doesn't exist OR is in a
-     * status that can't be cancelled - caller distinguishes via a follow-up
+     * status that can't be canceled - caller distinguishes via a follow-up
      * findByIdWithLines() call if it needs to know which.
      */
     public boolean cancel(long purchaseOrderId) throws SQLException {

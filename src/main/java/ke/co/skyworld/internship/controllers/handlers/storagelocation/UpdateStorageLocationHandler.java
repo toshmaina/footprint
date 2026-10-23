@@ -36,7 +36,7 @@ public class UpdateStorageLocationHandler extends SkyInventoryManagementHttpHand
             return;
         }
 
-        if (request == null || request.getLocationType() == null || !VALID_TYPES.contains(request.getLocationType())) {
+        if (request == null || request.locationType() == null || !VALID_TYPES.contains(request.locationType())) {
             sendError(exchange, "locationType is required and must be one of " + VALID_TYPES, StatusCodes.BAD_REQUEST);
             return;
         }
@@ -44,8 +44,8 @@ public class UpdateStorageLocationHandler extends SkyInventoryManagementHttpHand
         // warehouseId and binCode are intentionally not updatable - same
         // "stable external identifier" reasoning as product SKU / warehouse code.
         try {
-            boolean updated = storageLocationRepository.update(id, request.getZone(), request.getAisle(),
-                    request.getRack(), request.getLocationType());
+            boolean updated = storageLocationRepository.update(id, request.zone(), request.aisle(),
+                    request.rack(), request.locationType());
             if (!updated) {
                 sendError(exchange, "Storage location not found", StatusCodes.NOT_FOUND);
                 return;

@@ -36,19 +36,19 @@ public class UpdateSupplierHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || isBlank(request.getName())) {
+        if (request == null || isBlank(request.name())) {
             sendError(exchange, "name is required", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request.getDefaultLeadTimeDays() != null && request.getDefaultLeadTimeDays() < 0) {
+        if (request.defaultLeadTimeDays() != null && request.defaultLeadTimeDays() < 0) {
             sendError(exchange, "defaultLeadTimeDays cannot be negative", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            boolean updated = supplierRepository.update(supplierId, request.getName(), request.getContactEmail(),
-                    request.getContactPhone(), request.getDefaultLeadTimeDays());
+            boolean updated = supplierRepository.update(supplierId, request.name(), request.contactEmail(),
+                    request.contactPhone(), request.defaultLeadTimeDays());
             if (!updated) {
                 sendError(exchange, "Supplier not found", StatusCodes.NOT_FOUND);
                 return;

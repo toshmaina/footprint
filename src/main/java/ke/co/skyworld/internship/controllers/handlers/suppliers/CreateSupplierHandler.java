@@ -28,19 +28,19 @@ public class CreateSupplierHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || isBlank(request.getName())) {
+        if (request == null || isBlank(request.name())) {
             sendError(exchange, "name is required", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request.getDefaultLeadTimeDays() != null && request.getDefaultLeadTimeDays() < 0) {
+        if (request.defaultLeadTimeDays() != null && request.defaultLeadTimeDays() < 0) {
             sendError(exchange, "defaultLeadTimeDays cannot be negative", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            long supplierId = supplierRepository.create(request.getName(), request.getContactEmail(),
-                    request.getContactPhone(), request.getDefaultLeadTimeDays());
+            long supplierId = supplierRepository.create(request.name(), request.contactEmail(),
+                    request.contactPhone(), request.defaultLeadTimeDays());
             send(exchange, java.util.Map.of("supplierId", supplierId), StatusCodes.CREATED);
         } catch (SQLException e) {
             Log.error(getClass(), "handleRequest", "Supplier creation failed: " + e.getMessage(), e);
