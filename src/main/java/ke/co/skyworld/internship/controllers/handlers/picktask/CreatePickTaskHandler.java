@@ -1,14 +1,15 @@
 package ke.co.skyworld.internship.controllers.handlers.picktask;
 
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.picktask.PickTaskRequest;
 import ke.co.skyworld.internship.repository.PickTaskRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 public class CreatePickTaskHandler extends SkyInventoryManagementHttpHandler {
 
@@ -32,15 +33,15 @@ public class CreatePickTaskHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || request.getOrderLineId() == null || request.getLicensePlateId() == null) {
+        if (request == null || request.orderLineId() == null || request.licensePlateId() == null) {
             sendError(exchange, "orderLineId and licensePlateId are required", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            long taskId = pickTaskRepository.createTask(pickWaveId, request.getOrderLineId(),
-                    request.getLicensePlateId(), request.getAssignedTo());
-            send(exchange, java.util.Map.of("pickTaskId", taskId), StatusCodes.CREATED);
+            long taskId = pickTaskRepository.createTask(pickWaveId, request.orderLineId(),
+                    request.licensePlateId(), request.assignedTo());
+            send(exchange, Map.of("pickTaskId", taskId), StatusCodes.CREATED);
         } catch (PickTaskRepository.InvalidStateException e) {
             sendError(exchange, e.getMessage(), StatusCodes.CONFLICT);
         } catch (SQLException e) {

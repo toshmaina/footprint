@@ -35,7 +35,7 @@ public class UpdateWarehouseHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || isBlank(request.getName())) {
+        if (request == null || isBlank(request.name())) {
             sendError(exchange, "name is required", StatusCodes.BAD_REQUEST);
             return;
         }
@@ -43,7 +43,7 @@ public class UpdateWarehouseHandler extends SkyInventoryManagementHttpHandler {
         // Code is intentionally not updatable here, same reasoning as
         // product SKU - it's a stable external identifier used elsewhere.
         try {
-            boolean updated = warehouseRepository.update(warehouseId, request.getName(), request.getAddress());
+            boolean updated = warehouseRepository.update(warehouseId, request.name(), request.address());
             if (!updated) {
                 sendError(exchange, "Warehouse not found", StatusCodes.NOT_FOUND);
                 return;

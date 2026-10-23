@@ -1,16 +1,15 @@
 package ke.co.skyworld.internship.controllers.handlers.cyclecount;
 
 
-
-
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.count_cycles.CycleCountTaskRequest;
 import ke.co.skyworld.internship.repository.CycleCountRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 public class CreateCycleCountTaskHandler extends SkyInventoryManagementHttpHandler {
 
@@ -26,15 +25,15 @@ public class CreateCycleCountTaskHandler extends SkyInventoryManagementHttpHandl
             return;
         }
 
-        if (request == null || request.getWarehouseId() == null || request.getStorageLocationId() == null) {
+        if (request == null || request.warehouseId() == null || request.storageLocationId() == null) {
             sendError(exchange, "warehouseId and storageLocationId are required", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            long taskId = cycleCountRepository.createTaskWithSnapshot(request.getWarehouseId(),
-                    request.getStorageLocationId(), request.getScheduledDate(), request.getAssignedTo());
-            send(exchange, java.util.Map.of("taskId", taskId), StatusCodes.CREATED);
+            long taskId = cycleCountRepository.createTaskWithSnapshot(request.warehouseId(),
+                    request.storageLocationId(), request.scheduledDate(), request.assignedTo());
+            send(exchange, Map.of("taskId", taskId), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23503".equals(e.getSQLState())) {
                 sendError(exchange, "warehouseId or storageLocationId does not exist", StatusCodes.BAD_REQUEST);

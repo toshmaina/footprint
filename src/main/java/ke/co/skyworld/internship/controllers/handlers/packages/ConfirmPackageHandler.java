@@ -1,14 +1,12 @@
 package ke.co.skyworld.internship.controllers.handlers.packages;
 
 
-
-
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.packages.PackageConfirmRequest;
 import ke.co.skyworld.internship.repository.PackageRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 
@@ -35,7 +33,7 @@ public class ConfirmPackageHandler extends SkyInventoryManagementHttpHandler {
         }
 
         try {
-            boolean confirmed = packageRepository.confirmPack(packageId, request != null ? request.getWeight() : null);
+            boolean confirmed = packageRepository.confirmPack(packageId, request != null ? request.weight() : null);
             if (!confirmed) {
                 sendError(exchange, "Package not found, or not in 'packing' status", StatusCodes.CONFLICT);
                 return;

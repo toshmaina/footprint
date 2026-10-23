@@ -1,16 +1,15 @@
 package ke.co.skyworld.internship.controllers.handlers.shipment;
 
 
-
-
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.shipment.ShipmentRequest;
 import ke.co.skyworld.internship.repository.ShipmentRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 public class CreateShipmentHandler extends SkyInventoryManagementHttpHandler {
 
@@ -25,13 +24,13 @@ public class CreateShipmentHandler extends SkyInventoryManagementHttpHandler {
             sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
-        if (request == null || request.getWarehouseId() == null) {
+        if (request == null || request.warehouseId() == null) {
             sendError(exchange, "warehouseId is required", StatusCodes.BAD_REQUEST);
             return;
         }
         try {
-            long id = shipmentRepository.create(request.getWarehouseId(), request.getCarrier(), request.getTrackingNumber());
-            send(exchange, java.util.Map.of("shipmentId", id), StatusCodes.CREATED);
+            long id = shipmentRepository.create(request.warehouseId(), request.carrier(), request.trackingNumber());
+            send(exchange, Map.of("shipmentId", id), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23503".equals(e.getSQLState())) {
                 sendError(exchange, "warehouseId does not exist", StatusCodes.BAD_REQUEST);

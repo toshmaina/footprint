@@ -1,14 +1,13 @@
 package ke.co.skyworld.internship.controllers.handlers.picktask;
 
 
-
-import ke.co.skyworld.internship.domain.beans.picktask.PickConfirmationRequest;
-import ke.co.skyworld.internship.repository.PickTaskRepository;
-import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
-import ke.co.skyworld.internship.util.logging.Log;
-import ke.co.skyworld.internship.util.security.RequestContext;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
+import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
+import ke.co.skyworld.internship.domain.beans.picktask.PickConfirmationRequest;
+import ke.co.skyworld.internship.repository.PickTaskRepository;
+import ke.co.skyworld.internship.util.logging.Log;
+import ke.co.skyworld.internship.util.security.RequestContext;
 
 import java.sql.SQLException;
 
@@ -39,7 +38,7 @@ public class ConfirmPickHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || request.getQuantityPicked() == null || request.getQuantityPicked() < 0) {
+        if (request == null || request.quantityPicked() == null || request.quantityPicked() < 0) {
             sendError(exchange, "quantityPicked is required and cannot be negative", StatusCodes.BAD_REQUEST);
             return;
         }
@@ -48,7 +47,7 @@ public class ConfirmPickHandler extends SkyInventoryManagementHttpHandler {
         String confirmedBy = String.valueOf(context.userAccountId());
 
         try {
-            pickTaskRepository.confirmTask(pickTaskId, request.getQuantityPicked(), confirmedBy);
+            pickTaskRepository.confirmTask(pickTaskId, request.quantityPicked(), confirmedBy);
             send(exchange, java.util.Map.of("message", "Pick confirmed"), StatusCodes.OK);
         } catch (PickTaskRepository.InvalidStateException e) {
             sendError(exchange, e.getMessage(), StatusCodes.CONFLICT);

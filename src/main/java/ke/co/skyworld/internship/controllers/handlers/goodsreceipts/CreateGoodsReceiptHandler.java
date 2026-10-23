@@ -29,24 +29,24 @@ public class CreateGoodsReceiptHandler extends SkyInventoryManagementHttpHandler
             return;
         }
 
-        if (request == null || request.getWarehouseId() == null) {
+        if (request == null || request.warehouseId() == null) {
             sendError(exchange, "warehouseId is required", StatusCodes.BAD_REQUEST);
             return;
         }
-        if (request.getLines() == null || request.getLines().isEmpty()) {
+        if (request.lines() == null || request.lines().isEmpty()) {
             sendError(exchange, "A goods receipt must have at least one line", StatusCodes.BAD_REQUEST);
             return;
         }
-        for (GoodsReceiptRequest.Line line : request.getLines()) {
-            if (line.getProductId() == null || line.getQuantityCounted() == null) {
+        for (GoodsReceiptRequest.Line line : request.lines()) {
+            if (line.productId() == null || line.quantityCounted() == null) {
                 sendError(exchange, "Each line requires productId and quantityCounted", StatusCodes.BAD_REQUEST);
                 return;
             }
-            if (line.getQuantityCounted() < 0) {
+            if (line.quantityCounted() < 0) {
                 sendError(exchange, "quantityCounted cannot be negative", StatusCodes.BAD_REQUEST);
                 return;
             }
-            if (line.getConditionFlag() != null && !VALID_CONDITIONS.contains(line.getConditionFlag())) {
+            if (line.conditionFlag() != null && !VALID_CONDITIONS.contains(line.conditionFlag())) {
                 sendError(exchange, "conditionFlag must be one of unverified, damaged_visible, ok_visible", StatusCodes.BAD_REQUEST);
                 return;
             }
@@ -57,8 +57,8 @@ public class CreateGoodsReceiptHandler extends SkyInventoryManagementHttpHandler
 
         try {
             long goodsReceiptId = goodsReceiptRepository.createWithLines(
-                    request.getAdvanceShippingNoticeId(), request.getDockAppointmentId(),
-                    request.getWarehouseId(), receivedBy, request.getLines());
+                    request.advanceShippingNoticeId(), request.dockAppointmentId(),
+                    request.warehouseId(), receivedBy, request.lines());
             send(exchange, Map.of("goodsReceiptId", goodsReceiptId), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23503".equals(e.getSQLState())) {

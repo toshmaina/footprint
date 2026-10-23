@@ -67,17 +67,17 @@ public class GoodsReceiptRepository {
                     long lineId;
                     try (PreparedStatement ps = conn.prepareStatement(lineSql)) {
                         ps.setLong(1, goodsReceiptId);
-                        if (line.getPurchaseOrderLineId() != null) ps.setLong(2, line.getPurchaseOrderLineId());
+                        if (line.purchaseOrderLineId() != null) ps.setLong(2, line.purchaseOrderLineId());
                         else ps.setNull(2, Types.BIGINT);
-                        ps.setLong(3, line.getProductId());
-                        ps.setInt(4, line.getQuantityCounted());
-                        if (line.getQuantityExpected() != null) ps.setInt(5, line.getQuantityExpected());
+                        ps.setLong(3, line.productId());
+                        ps.setInt(4, line.quantityCounted());
+                        if (line.quantityExpected() != null) ps.setInt(5, line.quantityExpected());
                         else ps.setNull(5, Types.INTEGER);
-                        if (line.getLotNumber() != null && !line.getLotNumber().isBlank())
-                            ps.setString(6, line.getLotNumber());
+                        if (line.lotNumber() != null && !line.lotNumber().isBlank())
+                            ps.setString(6, line.lotNumber());
                         else ps.setNull(6, Types.VARCHAR);
-                        String condition = (line.getConditionFlag() != null && !line.getConditionFlag().isBlank())
-                                ? line.getConditionFlag() : "unverified";
+                        String condition = (line.conditionFlag() != null && !line.conditionFlag().isBlank())
+                                ? line.conditionFlag() : "unverified";
                         ps.setString(7, condition);
                         try (ResultSet rs = ps.executeQuery()) {
                             rs.next();
@@ -87,9 +87,8 @@ public class GoodsReceiptRepository {
 
                     // Auto-detect discrepancy: only possible if an expected
                     // quantity was actually given (unlinked receipts have none).
-                    if (line.getQuantityExpected() != null
-                            && !line.getQuantityExpected().equals(line.getQuantityCounted())) {
-                        int diff = line.getQuantityCounted() - line.getQuantityExpected();
+                    if (line.quantityExpected() != null && !line.quantityExpected().equals(line.quantityCounted())) {
+                        int diff = line.quantityCounted() - line.quantityExpected();
                         String type = diff > 0 ? "over_received" : "under_received";
                         try (PreparedStatement ps = conn.prepareStatement(discrepancySql)) {
                             ps.setLong(1, lineId);
@@ -101,9 +100,9 @@ public class GoodsReceiptRepository {
 
                     // Audit-trail ledger entry - does NOT make stock available.
                     try (PreparedStatement ps = conn.prepareStatement(ledgerSql)) {
-                        ps.setLong(1, line.getProductId());
+                        ps.setLong(1, line.productId());
                         ps.setLong(2, warehouseId);
-                        ps.setInt(3, line.getQuantityCounted());
+                        ps.setInt(3, line.quantityCounted());
                         ps.setLong(4, lineId);
                         ps.setString(5, receivedBy);
                         ps.executeUpdate();
@@ -150,7 +149,7 @@ public class GoodsReceiptRepository {
                     while (rs.next()) {
                         int expected = rs.getInt("goods_receipt_line_quantity_expected");
                         Integer expectedObj = rs.wasNull() ? null : expected;
-                        header.getLines().add(new GoodsReceiptResponse.Line(
+                        header.lines().add(new GoodsReceiptResponse.Line(
                                 rs.getLong("goods_receipt_line_id"), rs.getLong("product_id"),
                                 rs.getInt("goods_receipt_line_quantity_counted"), expectedObj,
                                 rs.getString("goods_receipt_line_lot_number"),

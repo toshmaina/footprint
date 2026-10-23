@@ -1,14 +1,12 @@
 package ke.co.skyworld.internship.controllers.handlers.packages;
 
 
-
-
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.packages.PackageRequest;
 import ke.co.skyworld.internship.repository.PackageRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 
@@ -25,12 +23,12 @@ public class CreatePackageHandler extends SkyInventoryManagementHttpHandler {
             sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
-        if (request == null || request.getOrderId() == null) {
+        if (request == null || request.orderId() == null) {
             sendError(exchange, "orderId is required", StatusCodes.BAD_REQUEST);
             return;
         }
         try {
-            long id = packageRepository.create(request.getOrderId());
+            long id = packageRepository.create(request.orderId());
             send(exchange, java.util.Map.of("packageId", id), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23503".equals(e.getSQLState())) {

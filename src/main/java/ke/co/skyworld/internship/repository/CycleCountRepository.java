@@ -5,27 +5,13 @@ import ke.co.skyworld.internship.domain.beans.count_cycles.CycleCountScheduleRes
 import ke.co.skyworld.internship.domain.beans.count_cycles.CycleCountTaskResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 public class CycleCountRepository {
-
-    public static class InvalidStateException extends RuntimeException {
-        public InvalidStateException(String message) {
-            super(message);
-        }
-    }
-
-    // -------------------------------------------------------------
-    // Schedules
-    // -------------------------------------------------------------
 
     public long createSchedule(long warehouseId, String classification, int frequencyDays) throws SQLException {
         String sql = """
@@ -45,6 +31,10 @@ public class CycleCountRepository {
         }
     }
 
+    // -------------------------------------------------------------
+    // Schedules
+    // -------------------------------------------------------------
+
     public List<CycleCountScheduleResponse> listSchedules(Long warehouseId) throws SQLException {
         String where = warehouseId != null ? "WHERE warehouse_id = ?" : "";
         String sql = "SELECT * FROM cycle_count_schedules " + where + " ORDER BY cycle_count_schedule_id";
@@ -63,10 +53,6 @@ public class CycleCountRepository {
         }
         return items;
     }
-
-    // -------------------------------------------------------------
-    // Tasks - creation auto-generates the frozen snapshot
-    // -------------------------------------------------------------
 
     /**
      * Computes a LOCATION-scoped balance per product (not warehouse-scoped
@@ -133,6 +119,10 @@ public class CycleCountRepository {
         }
     }
 
+    // -------------------------------------------------------------
+    // Tasks - creation auto-generates the frozen snapshot
+    // -------------------------------------------------------------
+
     public Optional<CycleCountTaskResponse> findTaskByIdWithLines(long taskId) throws SQLException {
         String headerSql = "SELECT * FROM cycle_count_tasks WHERE cycle_count_task_id = ?";
         // LATERAL join to the most recent result_line + its review decision (if any) per task line -
@@ -196,10 +186,6 @@ public class CycleCountRepository {
                     assignedTo, status, lines));
         }
     }
-
-    // -------------------------------------------------------------
-    // Physical count submission
-    // -------------------------------------------------------------
 
     /**
      * Always inserts a NEW result_line rather than updating one in place -
@@ -280,7 +266,7 @@ public class CycleCountRepository {
     }
 
     // -------------------------------------------------------------
-    // Variance review - the approval gate before anything touches the ledger
+    // Physical count submission
     // -------------------------------------------------------------
 
     /**
@@ -420,6 +406,16 @@ public class CycleCountRepository {
                 conn.rollback();
                 throw e;
             }
+        }
+    }
+
+    // -------------------------------------------------------------
+    // Variance review - the approval gate before anything touches the ledger
+    // -------------------------------------------------------------
+
+    public static class InvalidStateException extends RuntimeException {
+        public InvalidStateException(String message) {
+            super(message);
         }
     }
 }

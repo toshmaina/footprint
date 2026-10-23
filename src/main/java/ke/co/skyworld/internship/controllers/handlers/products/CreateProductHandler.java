@@ -2,12 +2,13 @@ package ke.co.skyworld.internship.controllers.handlers.products;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
-import ke.co.skyworld.internship.domain.beans.ProductRequest;
+import ke.co.skyworld.internship.domain.beans.product.ProductRequest;
 import ke.co.skyworld.internship.repository.ProductRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Set;
 
 public class CreateProductHandler extends SkyInventoryManagementHttpHandler {
@@ -30,31 +31,31 @@ public class CreateProductHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || isBlank(request.getSku()) || isBlank(request.getName())) {
+        if (request == null || isBlank(request.sku()) || isBlank(request.name())) {
             sendError(exchange, "sku and name are required", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request.getClassification() != null && !VALID_CLASSIFICATIONS.contains(request.getClassification())) {
+        if (request.classification() != null && !VALID_CLASSIFICATIONS.contains(request.classification())) {
             sendError(exchange, "classification must be one of A, B, C", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request.getReorderThreshold() != null && request.getReorderThreshold() < 0) {
+        if (request.reorderThreshold() != null && request.reorderThreshold() < 0) {
             sendError(exchange, "reorderThreshold cannot be negative", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            if (productRepository.skuExists(request.getSku())) {
+            if (productRepository.skuExists(request.sku())) {
                 sendError(exchange, "A product with this SKU already exists", StatusCodes.CONFLICT);
                 return;
             }
 
-            long productId = productRepository.create(request.getSku(), request.getName(),
-                    request.getCategory(), request.getReorderThreshold(), request.getClassification());
+            long productId = productRepository.create(request.sku(), request.name(),
+                    request.category(), request.reorderThreshold(), request.classification());
 
-            send(exchange, java.util.Map.of("productId", productId), StatusCodes.CREATED);
+            send(exchange, Map.of("productId", productId), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23505".equals(e.getSQLState())) {
                 sendError(exchange, "A product with this SKU already exists", StatusCodes.CONFLICT);

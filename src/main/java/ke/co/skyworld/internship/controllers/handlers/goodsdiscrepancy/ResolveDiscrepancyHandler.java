@@ -10,6 +10,7 @@ import ke.co.skyworld.internship.util.logging.Log;
 import ke.co.skyworld.internship.util.security.RequestContext;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Set;
 
 public class ResolveDiscrepancyHandler extends SkyInventoryManagementHttpHandler {
@@ -36,7 +37,7 @@ public class ResolveDiscrepancyHandler extends SkyInventoryManagementHttpHandler
             return;
         }
 
-        if (request == null || request.getStatus() == null || !VALID_STATUSES.contains(request.getStatus())) {
+        if (request == null || request.status() == null || !VALID_STATUSES.contains(request.status())) {
             sendError(exchange, "status is required and must be resolved_accepted or resolved_rejected", StatusCodes.BAD_REQUEST);
             return;
         }
@@ -45,12 +46,12 @@ public class ResolveDiscrepancyHandler extends SkyInventoryManagementHttpHandler
         String resolvedBy = String.valueOf(context.userAccountId());
 
         try {
-            boolean resolved = discrepancyRepository.resolve(discrepancyId, request.getStatus(), resolvedBy, request.getNotes());
+            boolean resolved = discrepancyRepository.resolve(discrepancyId, request.status(), resolvedBy, request.notes());
             if (!resolved) {
                 sendError(exchange, "Discrepancy not found, or already resolved", StatusCodes.CONFLICT);
                 return;
             }
-            send(exchange, java.util.Map.of("message", "Discrepancy resolved"), StatusCodes.OK);
+            send(exchange, Map.of("message", "Discrepancy resolved"), StatusCodes.OK);
         } catch (SQLException e) {
             Log.error(getClass(), "handleRequest", "Discrepancy resolution failed: " + e.getMessage(), e);
             sendError(exchange, "Discrepancy resolution failed", StatusCodes.INTERNAL_SERVER_ERROR);

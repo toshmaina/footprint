@@ -1,15 +1,15 @@
 package ke.co.skyworld.internship.controllers.handlers.shipment;
 
 
-
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.shipment.AttachPackageRequest;
 import ke.co.skyworld.internship.repository.ShipmentRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 public class AttachPackageToShipmentHandler extends SkyInventoryManagementHttpHandler {
 
@@ -32,14 +32,14 @@ public class AttachPackageToShipmentHandler extends SkyInventoryManagementHttpHa
             sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
-        if (request == null || request.getPackageId() == null) {
+        if (request == null || request.packageId() == null) {
             sendError(exchange, "packageId is required", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            shipmentRepository.attachPackage(shipmentId, request.getPackageId());
-            send(exchange, java.util.Map.of("message", "Package attached to shipment"), StatusCodes.OK);
+            shipmentRepository.attachPackage(shipmentId, request.packageId());
+            send(exchange, Map.of("message", "Package attached to shipment"), StatusCodes.OK);
         } catch (ShipmentRepository.InvalidStateException e) {
             sendError(exchange, e.getMessage(), StatusCodes.CONFLICT);
         } catch (SQLException e) {

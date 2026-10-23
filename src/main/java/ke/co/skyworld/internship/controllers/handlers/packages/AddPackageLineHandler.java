@@ -1,15 +1,15 @@
 package ke.co.skyworld.internship.controllers.handlers.packages;
 
 
-
-import ke.co.skyworld.internship.domain.beans.packages.PackageLineRequest;
-import ke.co.skyworld.internship.repository.PackageRepository;
-import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
-import ke.co.skyworld.internship.util.logging.Log;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
+import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
+import ke.co.skyworld.internship.domain.beans.packages.PackageLineRequest;
+import ke.co.skyworld.internship.repository.PackageRepository;
+import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 public class AddPackageLineHandler extends SkyInventoryManagementHttpHandler {
 
@@ -32,15 +32,15 @@ public class AddPackageLineHandler extends SkyInventoryManagementHttpHandler {
             sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
-        if (request == null || request.getOrderLineId() == null || request.getQuantity() == null
-                || request.getQuantity() <= 0) {
+        if (request == null || request.orderLineId() == null || request.quantity() == null
+                || request.quantity() <= 0) {
             sendError(exchange, "orderLineId and a positive quantity are required", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            long lineId = packageRepository.addLine(packageId, request.getOrderLineId(), request.getQuantity());
-            send(exchange, java.util.Map.of("packageLineId", lineId), StatusCodes.CREATED);
+            long lineId = packageRepository.addLine(packageId, request.orderLineId(), request.quantity());
+            send(exchange, Map.of("packageLineId", lineId), StatusCodes.CREATED);
         } catch (PackageRepository.InvalidStateException e) {
             sendError(exchange, e.getMessage(), StatusCodes.CONFLICT);
         } catch (SQLException e) {

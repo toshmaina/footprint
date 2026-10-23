@@ -22,12 +22,12 @@ public class CreatePickWaveHandler extends SkyInventoryManagementHttpHandler {
             sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
-        if (request == null || request.getWarehouseId() == null) {
+        if (request == null || request.warehouseId() == null) {
             sendError(exchange, "warehouseId is required", StatusCodes.BAD_REQUEST);
             return;
         }
         try {
-            long id = pickWaveRepository.create(request.getWarehouseId(), request.getCutoffTime());
+            long id = pickWaveRepository.create(request.warehouseId(), request.cutoffTime());
             send(exchange, java.util.Map.of("pickWaveId", id), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23503".equals(e.getSQLState())) {

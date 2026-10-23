@@ -67,8 +67,8 @@ public class OrderRepository {
                             RETURNING order_line_id
                             """)) {
                         ps.setLong(1, orderId);
-                        ps.setLong(2, requestLine.getProductId());
-                        ps.setInt(3, requestLine.getQuantityOrdered());
+                        ps.setLong(2, requestLine.productId());
+                        ps.setInt(3, requestLine.quantityOrdered());
                         try (ResultSet rs = ps.executeQuery()) {
                             rs.next();
                             orderLineId = rs.getLong("order_line_id");
@@ -79,10 +79,10 @@ public class OrderRepository {
                     Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + RESERVATION_TTL.toMillis());
                     try (PreparedStatement ps = conn.prepareStatement(
                             "SELECT reserve_stock(?, ?, ?, ?, ?, ?) AS reservation_id")) {
-                        ps.setLong(1, requestLine.getProductId());
+                        ps.setLong(1, requestLine.productId());
                         ps.setLong(2, warehouseId);
                         ps.setLong(3, orderLineId);
-                        ps.setInt(4, requestLine.getQuantityOrdered());
+                        ps.setInt(4, requestLine.quantityOrdered());
                         ps.setTimestamp(5, expiresAt);
                         ps.setString(6, requestedBy);
                         try (ResultSet rs = ps.executeQuery()) {
@@ -97,7 +97,7 @@ public class OrderRepository {
                     int quantityAllocated;
 
                     if (reservationId != null) {
-                        quantityAllocated = requestLine.getQuantityOrdered();
+                        quantityAllocated = requestLine.quantityOrdered();
                         lineStatus = "reserved";
                         reservedCount++;
                         try (PreparedStatement ps = conn.prepareStatement(
@@ -117,7 +117,7 @@ public class OrderRepository {
                                 RETURNING backorder_id
                                 """)) {
                             ps.setLong(1, orderLineId);
-                            ps.setInt(2, requestLine.getQuantityOrdered());
+                            ps.setInt(2, requestLine.quantityOrdered());
                             try (ResultSet rs = ps.executeQuery()) {
                                 rs.next();
                                 backorderId = rs.getLong("backorder_id");
@@ -130,8 +130,8 @@ public class OrderRepository {
                         }
                     }
 
-                    lineResults.add(new OrderResponse.Line(orderLineId, requestLine.getProductId(),
-                            requestLine.getQuantityOrdered(), quantityAllocated, lineStatus, reservationId, backorderId));
+                    lineResults.add(new OrderResponse.Line(orderLineId, requestLine.productId(),
+                            requestLine.quantityOrdered(), quantityAllocated, lineStatus, reservationId, backorderId));
                 }
 
                 String orderStatus = backorderedCount == 0 ? "allocated"
