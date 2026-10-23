@@ -37,18 +37,18 @@ public class RecordQaInspectionHandler extends SkyInventoryManagementHttpHandler
             return;
         }
 
-        if (request == null || request.getDisposition() == null
-                || !VALID_DISPOSITIONS.contains(request.getDisposition())) {
+        if (request == null || request.disposition() == null
+                || !VALID_DISPOSITIONS.contains(request.disposition())) {
             sendError(exchange, "disposition is required and must be one of pass, fail, partial", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request.getMethod() != null && !VALID_METHODS.contains(request.getMethod())) {
+        if (request.method() != null && !VALID_METHODS.contains(request.method())) {
             sendError(exchange, "method must be one of visual, measured, tested", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if ("partial".equals(request.getDisposition()) && request.getFailedQuantity() == null) {
+        if ("partial".equals(request.disposition()) && request.failedQuantity() == null) {
             sendError(exchange, "failedQuantity is required for a partial disposition", StatusCodes.BAD_REQUEST);
             return;
         }
@@ -58,8 +58,8 @@ public class RecordQaInspectionHandler extends SkyInventoryManagementHttpHandler
 
         try {
             QaRepository.QaOutcome outcome = qaRepository.recordInspectionWithResult(
-                    licensePlateId, inspector, request.getSampleSize(), request.getMethod(),
-                    request.getDisposition(), request.getFailedQuantity(), request.getNotes());
+                    licensePlateId, inspector, request.sampleSize(), request.method(),
+                    request.disposition(), request.failedQuantity(), request.notes());
 
             send(exchange, java.util.Map.of(
                     "inspectionId", outcome.inspectionId(),

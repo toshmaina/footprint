@@ -2,6 +2,8 @@ package ke.co.skyworld.internship.util.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Timer;
+import io.undertow.server.BlockingHttpExchange;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
@@ -11,15 +13,18 @@ import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.ExceptionRepresentation;
 import ke.co.skyworld.internship.util.logging.Log;
+import ke.co.skyworld.internship.util.metrics.Metrics;
 import ke.co.skyworld.internship.util.security.RequestContext;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static ke.co.skyworld.internship.config.Constants.*;
 import static ke.co.skyworld.internship.util.formatting.Converter.getObjectMapper;
@@ -102,6 +107,24 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
         return message.trim();
     }
 
+    private static void recordMetric(HttpServerExchange exchange, int status) {
+        Long start = exchange.getAttachment(REQUEST_START_TIME);
+        if (start == null) return;
+
+        PathTemplateMatch match = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY);
+        String path = exchange.getRequestPath();
+        String[] segments = path.split("/", 3);
+        String prefix = segments.length > 1 ? "/" + segments[1] : path;
+        String uri = match != null ? prefix + "/" + match.getMatchedTemplate() : path;
+
+        Timer.builder("http.server.requests")
+                .tag("uri", uri)
+                .tag("method", exchange.getRequestMethod().toString())
+                .tag("status", String.valueOf(status))
+                .register(Metrics.REGISTRY)
+                .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+    }
+
     public static void sendError(
             HttpServerExchange exchange,
             String message,
@@ -122,6 +145,7 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
 
     public static void send(HttpServerExchange exchange, Object data, Integer status) {
         exchange.setStatusCode(status);
+        recordMetric(exchange, status);
 
         String contentType = determineAccept(exchange);
 
@@ -152,6 +176,7 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
 
     public static void sendBytes(HttpServerExchange exchange, byte[] data, String contentType, String filename) {
         exchange.setStatusCode(StatusCodes.OK);
+        recordMetric(exchange, StatusCodes.OK);
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, contentType);
         exchange.getResponseHeaders().put(Headers.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + filename.replace("\"", "") + "\"");
@@ -246,8 +271,9 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
     }
 
     public static String getRequestBody(HttpServerExchange exchange) throws IOException {
-        exchange.startBlocking();
-        try (InputStream inputStream = exchange.getInputStream()) {
+
+        try (BlockingHttpExchange ignore =  exchange.startBlocking();
+             InputStream inputStream = exchange.getInputStream()) {
             byte[] bytes = inputStream.readAllBytes();
             return bytes.length > 0 ? new String(bytes, StandardCharsets.UTF_8) : null;
         }
@@ -261,11 +287,6 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
         RequestContext context = currentUser(exchange);
         return context != null && context.superUser();
     }
-
-//    protected static boolean isSelfOrSuperUser(HttpServerExchange exchange, Long targetMemberId) {
-//        RequestContext context = currentUser(exchange);
-//        return context != null && context.isSelfOrSuperUser(targetMemberId);
-//    }
 
     public static String getAuthToken(HttpServerExchange exchange) {
         String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
@@ -361,4 +382,3 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
     }
 
 }
-

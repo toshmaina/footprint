@@ -26,16 +26,16 @@ public class CreateOrderHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || request.getCustomerId() == null) {
+        if (request == null || request.customerId() == null) {
             sendError(exchange, "customerId is required", StatusCodes.BAD_REQUEST);
             return;
         }
-        if (request.getLines() == null || request.getLines().isEmpty()) {
+        if (request.lines() == null || request.lines().isEmpty()) {
             sendError(exchange, "An order must have at least one line", StatusCodes.BAD_REQUEST);
             return;
         }
-        for (OrderRequest.Line line : request.getLines()) {
-            if (line.getProductId() == null || line.getQuantityOrdered() == null || line.getQuantityOrdered() <= 0) {
+        for (OrderRequest.Line line : request.lines()) {
+            if (line.productId() == null || line.quantityOrdered() == null || line.quantityOrdered() <= 0) {
                 sendError(exchange, "Each line requires productId and a positive quantityOrdered", StatusCodes.BAD_REQUEST);
                 return;
             }
@@ -45,7 +45,7 @@ public class CreateOrderHandler extends SkyInventoryManagementHttpHandler {
         String requestedBy = String.valueOf(context.userAccountId());
 
         try {
-            OrderResponse response = orderRepository.createWithLines(request.getCustomerId(), request.getLines(), requestedBy);
+            OrderResponse response = orderRepository.createWithLines(request.customerId(), request.lines(), requestedBy);
             send(exchange, response, StatusCodes.CREATED);
         } catch (OrderRepository.CustomerNotFoundException e) {
             sendError(exchange, e.getMessage(), StatusCodes.BAD_REQUEST);
