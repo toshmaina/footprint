@@ -19,8 +19,7 @@ public class OrderRepository {
      * Rule 1 (warehouse allocation) is implemented as "hold": every line is
      * attempted only against the customer's customer_default_warehouse_id.
      * No cross-warehouse fallback - a shortfall goes straight to backorder
-     * rather than the system hunting other warehouses. Documented decision,
-     * not an oversight.
+     * rather than the system hunting other warehouses.
      * <p>
      * Order header, every line, every reservation attempt (via the
      * concurrency-safe reserve_stock() function), and every resulting
@@ -152,8 +151,7 @@ public class OrderRepository {
             }
         }
     }
-    // used consistently since the httpie
-    // collection examples
+
 
     public Optional<OrderResponse> findByIdWithLines(long orderId) throws SQLException {
         String headerSql = "SELECT * FROM orders WHERE order_id = ?";

@@ -43,7 +43,7 @@ public class StorageLocationRepository {
                 INSERT INTO storage_locations
                     (warehouse_id, storage_location_zone, storage_location_aisle, storage_location_rack,
                      storage_location_bin_code, storage_location_type)
-                VALUES (?, ?, ?, ?, ?, ?::location_type)
+                VALUES (?, ?, ?, ?, ?, ?::storage_location_type)
                 RETURNING storage_location_id
                 """;
         try (Connection conn = ConnectionPool.getInstance().borrow();
@@ -106,7 +106,7 @@ public class StorageLocationRepository {
         String sql = """
                 UPDATE storage_locations
                 SET storage_location_zone = ?, storage_location_aisle = ?, storage_location_rack = ?,
-                    storage_location_type = ?::location_type
+                    storage_location_type = ?::storage_location_type
                 WHERE storage_location_id = ?
                 """;
         try (Connection conn = ConnectionPool.getInstance().borrow();
