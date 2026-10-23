@@ -51,9 +51,9 @@ import ke.co.skyworld.internship.util.http.Dispatcher;
 import ke.co.skyworld.internship.util.http.FallBack;
 import ke.co.skyworld.internship.util.http.InvalidMethod;
 import ke.co.skyworld.internship.util.http.middleware.AuthMiddleware;
+import ke.co.skyworld.internship.util.http.middleware.RateLimiterMiddleware;
 
 import static ke.co.skyworld.internship.util.metrics.Metrics.metricsHandler;
-import ke.co.skyworld.internship.util.http.middleware.RateLimiterMiddleware;
 
 public class Routes {
 

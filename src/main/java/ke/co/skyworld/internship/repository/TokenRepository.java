@@ -75,6 +75,7 @@ public class TokenRepository {
             }
         }
     }
+
     public TokenPair issueTokenPair(long userAccountId) throws SQLException {
         String accessToken = issueToken(userAccountId, TokenType.ACCESS, TokenTtl.accessTokenTtl(), ACCESS_TOKEN_LENGTH);
         String refreshToken = issueToken(userAccountId, TokenType.REFRESH, TokenTtl.refreshTokenTtl(), REFRESH_TOKEN_LENGTH);

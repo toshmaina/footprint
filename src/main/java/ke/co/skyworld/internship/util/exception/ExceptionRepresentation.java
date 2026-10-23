@@ -1,4 +1,3 @@
-
 package ke.co.skyworld.internship.util.exception;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -33,6 +32,10 @@ public final class ExceptionRepresentation {
         this.method = builder.method;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getId() {
         return id;
     }
@@ -63,10 +66,6 @@ public final class ExceptionRepresentation {
 
     public String getMethod() {
         return method;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static final class Builder {

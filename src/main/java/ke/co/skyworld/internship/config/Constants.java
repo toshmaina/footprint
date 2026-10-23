@@ -129,15 +129,19 @@ public class Constants {
     public static String getDbPass() {
         return CredentialVault.resolvePlaintext(XML_PATH_TO_DB_PASS);
     }
+
     public static Long getRateLimitTokenBucketCapacity() {
         return Long.parseLong(XmlUtils.readXMLTag(XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_CAPACITY));
     }
+
     public static Long getRateLimitTokenBucketRefillAmount() {
         return Long.parseLong(XmlUtils.readXMLTag(XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_AMOUNT));
     }
+
     public static int getRateLimitTokenBucketRefillTime() {
         return Integer.parseInt(XmlUtils.readXMLTag(XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME));
     }
+
     public static String getRateLimitTokenBucketRefillTimeUnit() {
         return XmlUtils.readXMLTag(XML_PATH_TO_RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME_UNIT);
     }

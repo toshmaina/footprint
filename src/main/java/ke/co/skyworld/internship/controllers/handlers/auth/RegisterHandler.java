@@ -24,14 +24,14 @@ public class RegisterHandler extends SkyInventoryManagementHttpHandler {
             request = parseBody(exchange, RegisterRequest.class);
 
         } catch (IOException e) {
-                        Log.warning(RegisterHandler.class, "handleRequest",
-                                        "Failed to parse register request body: " + e.getMessage());
+            Log.warning(RegisterHandler.class, "handleRequest",
+                    "Failed to parse register request body: " + e.getMessage());
             sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
-        if(request == null ) {
+        if (request == null) {
             sendError(exchange, "The request body is required", StatusCodes.BAD_REQUEST);
-        return;
+            return;
         }
         String validationError = Validation.validate(request);
         if (validationError != null) {

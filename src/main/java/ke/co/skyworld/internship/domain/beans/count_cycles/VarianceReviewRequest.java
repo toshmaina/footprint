@@ -7,6 +7,11 @@ public class VarianceReviewRequest {
     public VarianceReviewRequest() {
     }
 
-    public String getDecision() { return decision; }
-    public void setDecision(String decision) { this.decision = decision; }
+    public String getDecision() {
+        return decision;
+    }
+
+    public void setDecision(String decision) {
+        this.decision = decision;
+    }
 }

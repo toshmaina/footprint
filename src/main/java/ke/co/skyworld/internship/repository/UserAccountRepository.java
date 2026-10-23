@@ -32,7 +32,7 @@ public class UserAccountRepository {
                 if (!rs.next()) return null;
                 long warehouseId = rs.getLong("user_account_default_warehouse_id");
                 Long defaultWarehouseId = rs.wasNull() ? null : warehouseId;
-                UserAccountStatus userAccountStatus =  UserAccountStatus.valueOf(rs.getString("user_account_status").toUpperCase());
+                UserAccountStatus userAccountStatus = UserAccountStatus.valueOf(rs.getString("user_account_status").toUpperCase());
                 return new AuthSnapshot(defaultWarehouseId, userAccountStatus);
             }
         }
@@ -56,7 +56,7 @@ public class UserAccountRepository {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return Optional.empty();
-                return Optional.of( new LoginCredentials(
+                return Optional.of(new LoginCredentials(
                         rs.getLong("user_account_id"),
                         rs.getString("user_account_password_hash"),
                         UserAccountStatus.valueOf(rs.getString("user_account_status").toUpperCase())

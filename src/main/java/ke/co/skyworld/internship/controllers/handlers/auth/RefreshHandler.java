@@ -34,7 +34,7 @@ public class RefreshHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
         if (request == null) {
-            sendError(exchange,"Malformed request body", StatusCodes.BAD_REQUEST);
+            sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
         String validationError = Validation.validate(request);
@@ -53,7 +53,7 @@ public class RefreshHandler extends SkyInventoryManagementHttpHandler {
                 return;
             }
 
-          UserAccountRepository.AuthSnapshot snapshot = userAccountRepository.findAuthSnapshot(userAccountId);
+            UserAccountRepository.AuthSnapshot snapshot = userAccountRepository.findAuthSnapshot(userAccountId);
             if (snapshot == null || !UserAccountStatus.ACTIVE.equals(snapshot.status())) {
                 sendError(exchange, "This account cannot refresh a session", StatusCodes.FORBIDDEN);
                 return;

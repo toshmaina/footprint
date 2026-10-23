@@ -2,9 +2,9 @@ package ke.co.skyworld.internship.controllers.handlers.products;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
-import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.domain.beans.product.ProductRequest;
 import ke.co.skyworld.internship.repository.ProductRepository;
+import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;

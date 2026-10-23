@@ -275,7 +275,7 @@ public class SkyInventoryManagementHttpHandler implements HttpHandler {
 
     public static String getRequestBody(HttpServerExchange exchange) throws IOException {
 
-        try (BlockingHttpExchange ignore =  exchange.startBlocking();
+        try (BlockingHttpExchange ignore = exchange.startBlocking();
              InputStream inputStream = exchange.getInputStream()) {
             byte[] bytes = inputStream.readAllBytes();
             return bytes.length > 0 ? new String(bytes, StandardCharsets.UTF_8) : null;

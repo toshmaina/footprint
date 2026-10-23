@@ -19,10 +19,10 @@ public class LogoutHandler extends SkyInventoryManagementHttpHandler {
         String accessToken = getAuthToken(exchange);
 
         try {
-                    if (accessToken == null || accessToken.isBlank()) {
-                           sendError(exchange, "Access token is required", StatusCodes.UNAUTHORIZED);
-                            return;
-                       }
+            if (accessToken == null || accessToken.isBlank()) {
+                sendError(exchange, "Access token is required", StatusCodes.UNAUTHORIZED);
+                return;
+            }
             LogoutRequest request = tryParseBody(exchange);
             if (request != null && request.refreshToken() != null && !request.refreshToken().isBlank()) {
                 tokenRepository.revokeToken(request.refreshToken());

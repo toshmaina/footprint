@@ -3,9 +3,9 @@ package ke.co.skyworld.internship.controllers.handlers.licenseplate;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
-import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.domain.beans.licenseplates.CreateLicensePlatesRequest;
 import ke.co.skyworld.internship.repository.LicensePlateRepository;
+import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;

@@ -491,9 +491,9 @@ public class DateTime {
     public record DateTimeRange(LocalDateTime start, LocalDateTime end) {
 
         public boolean isValid() {
-                return start != null && end != null && start.isBefore(end);
-            }
+            return start != null && end != null && start.isBefore(end);
         }
+    }
 
 
 }

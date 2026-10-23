@@ -21,10 +21,9 @@ public class RateLimiterMiddleware implements HttpHandler {
     private static final String RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME_UNIT = Constants.getRateLimitTokenBucketRefillTimeUnit();
     private static final Long RATE_LIMIT_TOKEN_BUCKET_REFILL_AMOUNT = Constants.getRateLimitTokenBucketRefillAmount();
     private static final Long RATE_LIMIT_TOKEN_BUCKET_CAPACITY = Constants.getRateLimitTokenBucketCapacity();
-    private final HttpHandler next;
-
     // Thread-safe cache to store rate-limit buckets per IP Address
     private static final Map<String, Bucket> ipBuckets = new ConcurrentHashMap<>();
+    private final HttpHandler next;
 
     public RateLimiterMiddleware(HttpHandler next) {
         this.next = next;
@@ -33,7 +32,7 @@ public class RateLimiterMiddleware implements HttpHandler {
     // Define the rate limit rule: Token Bucket with a defined capacity, refilling at a fixed rate.
     private static Bucket createNewBucket() {
 
-        Bandwidth limit = Bandwidth.classic(RATE_LIMIT_TOKEN_BUCKET_CAPACITY, Refill.greedy(RATE_LIMIT_TOKEN_BUCKET_REFILL_AMOUNT, ResolveDuration.createDuration(RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME,RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME_UNIT)));
+        Bandwidth limit = Bandwidth.classic(RATE_LIMIT_TOKEN_BUCKET_CAPACITY, Refill.greedy(RATE_LIMIT_TOKEN_BUCKET_REFILL_AMOUNT, ResolveDuration.createDuration(RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME, RATE_LIMIT_TOKEN_BUCKET_REFILL_TIME_UNIT)));
         return Bucket.builder().addLimit(limit).build();
     }
 
@@ -49,8 +48,8 @@ public class RateLimiterMiddleware implements HttpHandler {
         if (bucket.tryConsume(1)) {
             next.handleRequest(exchange);
         } else {
-            Log.warning(RateLimiterMiddleware.class,"handleRequest","Rate limit exceeded for: " + clientIp);
-            send(exchange,Map.of("error","Rate limit exceeded. Please try again later."),StatusCodes.TOO_MANY_REQUESTS);
+            Log.warning(RateLimiterMiddleware.class, "handleRequest", "Rate limit exceeded for: " + clientIp);
+            send(exchange, Map.of("error", "Rate limit exceeded. Please try again later."), StatusCodes.TOO_MANY_REQUESTS);
         }
     }
 }

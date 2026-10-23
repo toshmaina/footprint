@@ -36,14 +36,14 @@ public class LoginHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
         if (request == null) {
-            sendError(exchange,"Malformed request body", StatusCodes.BAD_REQUEST);
+            sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
 
         String validationError = Validation.validate(request);
 
         if (validationError != null) {
-            Log.warning(LoginHandler.class,"handleRequest",validationError);
+            Log.warning(LoginHandler.class, "handleRequest", validationError);
             sendError(exchange, validationError, StatusCodes.BAD_REQUEST);
             return;
         }
