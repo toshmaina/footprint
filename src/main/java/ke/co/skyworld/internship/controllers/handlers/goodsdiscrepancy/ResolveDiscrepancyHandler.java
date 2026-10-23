@@ -3,7 +3,7 @@ package ke.co.skyworld.internship.controllers.handlers.goodsdiscrepancy;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
-import ke.co.skyworld.internship.domain.beans.discrepancysolution.DiscrepancyResolutionRequest;
+import ke.co.skyworld.internship.domain.beans.discrepancyresolution.DiscrepancyResolutionRequest;
 import ke.co.skyworld.internship.repository.DiscrepancyRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
