@@ -35,20 +35,20 @@ public class CreateLicensePlatesHandler extends SkyInventoryManagementHttpHandle
             return;
         }
 
-        if (request == null || request.getPlates() == null || request.getPlates().isEmpty()) {
+        if (request == null || request.plates() == null || request.plates().isEmpty()) {
             sendError(exchange, "At least one plate is required", StatusCodes.BAD_REQUEST);
             return;
         }
-        for (CreateLicensePlatesRequest.Plate plate : request.getPlates()) {
-            if (plate.getCode() == null || plate.getCode().isBlank() || plate.getQuantity() == null
-                    || plate.getQuantity() <= 0) {
+        for (CreateLicensePlatesRequest.Plate plate : request.plates()) {
+            if (plate.code() == null || plate.code().isBlank() || plate.quantity() == null
+                    || plate.quantity() <= 0) {
                 sendError(exchange, "Each plate requires a non-blank code and a positive quantity", StatusCodes.BAD_REQUEST);
                 return;
             }
         }
 
         try {
-            List<Long> ids = licensePlateRepository.createFromReceiptLine(goodsReceiptLineId, request.getPlates());
+            List<Long> ids = licensePlateRepository.createFromReceiptLine(goodsReceiptLineId, request.plates());
             send(exchange, Map.of("licensePlateIds", ids), StatusCodes.CREATED);
         } catch (LicensePlateRepository.LicensePlateQuantityExceededException e) {
             sendError(exchange, e.getMessage(), StatusCodes.CONFLICT);

@@ -83,15 +83,15 @@ public class AdvanceShippingNoticeRepository {
                 try (PreparedStatement ps = conn.prepareStatement(lineSql)) {
                     for (AdvanceShippingNoticeRequest.Line line : lines) {
                         ps.setLong(1, asnId);
-                        ps.setLong(2, line.getProductId());
-                        ps.setInt(3, line.getQuantityExpected());
-                        if (line.getLotNumber() != null && !line.getLotNumber().isBlank()) {
-                            ps.setString(4, line.getLotNumber());
+                        ps.setLong(2, line.productId());
+                        ps.setInt(3, line.quantityExpected());
+                        if (line.lotNumber() != null && !line.lotNumber().isBlank()) {
+                            ps.setString(4, line.lotNumber());
                         } else {
                             ps.setNull(4, Types.VARCHAR);
                         }
-                        if (line.getPackagingType() != null && !line.getPackagingType().isBlank()) {
-                            ps.setString(5, line.getPackagingType());
+                        if (line.packagingType() != null && !line.packagingType().isBlank()) {
+                            ps.setString(5, line.packagingType());
                         } else {
                             ps.setNull(5, Types.VARCHAR);
                         }
@@ -129,7 +129,7 @@ public class AdvanceShippingNoticeRepository {
                 ps.setLong(1, asnId);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        header.getLines().add(mapLine(rs));
+                        header.lines().add(mapLine(rs));
                     }
                 }
             }

@@ -119,13 +119,60 @@ public class EmailService {
         return p;
     }
 
-    public void sendVerificationOtp(String toEmail, String name, String otp) {
+    public static void sendVerificationOtp(String toEmail, String name, String otp) {
         Map<String, Object> model = Map.of(
                 "name", name,
                 "otpCode", otp,
                 "otpExpiryMinutes", Constants.getOtpTtlMinutes()
         );
-        sendAsync(toEmail, "Verify your Sky-Core account", "mail/verification-otp.ftl", model);
+        sendAsync(toEmail, "Verify your Sky-Core account", "/mail/verification-otp.ftl", model);
+    }
+
+    private static void sendAsync(String to, String subject, String templateName,
+                                  Map<String, Object> model) {
+        if (!Constants.isEmailEnabled()) {
+            Log.info(EmailService.class, "sendAsync",
+                    "Email disabled - skipping send to " + to + " (template=" + templateName + ")");
+            return;
+        }
+        EXECUTOR.submit(() -> {
+            try {
+                String html = TemplateEngine.render(templateName, model);
+                doSend(to, subject, html);
+            } catch (Exception e) {
+                Log.error(EmailService.class, "sendAsync",
+                        "Failed to send email to " + to + ": " + e.getMessage(), e);
+            }
+        });
+    }
+
+    private static void doSend(String to, String subject, String htmlBody) throws Exception {
+        Session session = buildSession();
+
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(Constants.getEmailFrom()));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+        message.setSubject(subject);
+
+        MimeBodyPart htmlPart = new MimeBodyPart();
+        htmlPart.setContent(htmlBody, "text/html; charset=UTF-8");
+        Multipart multipart = new MimeMultipart("alternative");
+        multipart.addBodyPart(htmlPart);
+        message.setContent(multipart);
+
+        Transport.send(message);
+        Log.info(EmailService.class, "doSend", "Email sent to " + to + ": " + subject);
+    }
+
+    private static Session buildSession() {
+        String user = Constants.getEmailUser();
+        String pass = Constants.getEmailPass();
+        return Session.getInstance(PROPS, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(user, pass);
+            }
+        });
     }
 
     public void sendLoginMfaOtp(String toEmail, String name, String otp) {
@@ -134,7 +181,7 @@ public class EmailService {
                 "otpCode", otp,
                 "otpExpiryMinutes", Constants.getOtpTtlMinutes()
         );
-        sendAsync(toEmail, "Your Sky-Core sign-in code", "mail/login-mfa-otp.ftl", model);
+        sendAsync(toEmail, "Your Sky-Core sign-in code", "/mail/login-mfa-otp.ftl", model);
     }
 
     public void sendPasswordReset(String toEmail, String name, String resetLink) {
@@ -178,42 +225,6 @@ public class EmailService {
         });
     }
 
-    private void sendAsync(String to, String subject, String templateName,
-                           Map<String, Object> model) {
-        if (!Constants.isEmailEnabled()) {
-            Log.info(EmailService.class, "sendAsync",
-                    "Email disabled - skipping send to " + to + " (template=" + templateName + ")");
-            return;
-        }
-        EXECUTOR.submit(() -> {
-            try {
-                String html = TemplateEngine.render(templateName, model);
-                doSend(to, subject, html);
-            } catch (Exception e) {
-                Log.error(EmailService.class, "sendAsync",
-                        "Failed to send email to " + to + ": " + e.getMessage(), e);
-            }
-        });
-    }
-
-    private void doSend(String to, String subject, String htmlBody) throws Exception {
-        Session session = buildSession();
-
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(Constants.getEmailFrom()));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        message.setSubject(subject);
-
-        MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent(htmlBody, "text/html; charset=UTF-8");
-        Multipart multipart = new MimeMultipart("alternative");
-        multipart.addBodyPart(htmlPart);
-        message.setContent(multipart);
-
-        Transport.send(message);
-        Log.info(EmailService.class, "doSend", "Email sent to " + to + ": " + subject);
-    }
-
     private void doSendWithAttachment(String to, String subject, String htmlBody,
                                       byte[] attachmentData, String attachmentName) throws Exception {
         Session session = buildSession();
@@ -241,17 +252,6 @@ public class EmailService {
         Transport.send(message);
         Log.info(this.getClass(), "doSendWithAttachment",
                 "Email with attachment sent to " + to + ": " + subject);
-    }
-
-    private Session buildSession() {
-        String user = Constants.getEmailUser();
-        String pass = Constants.getEmailPass();
-        return Session.getInstance(PROPS, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(user, pass);
-            }
-        });
     }
 }
 

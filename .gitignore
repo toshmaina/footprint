@@ -9,6 +9,7 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/*
 *.iws
 *.iml
 *.ipr
@@ -44,3 +45,4 @@ conf.xml
 
 ### Mac OS ###
 .DS_Store
+/tmp/

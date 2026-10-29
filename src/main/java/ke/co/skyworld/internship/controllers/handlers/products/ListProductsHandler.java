@@ -4,7 +4,7 @@ package ke.co.skyworld.internship.controllers.handlers.products;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.domain.beans.PagedResponse;
-import ke.co.skyworld.internship.domain.beans.ProductResponse;
+import ke.co.skyworld.internship.domain.beans.product.ProductResponse;
 import ke.co.skyworld.internship.repository.PageResult;
 import ke.co.skyworld.internship.repository.ProductRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;

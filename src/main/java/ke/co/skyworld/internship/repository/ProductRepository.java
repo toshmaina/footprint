@@ -1,6 +1,6 @@
 package ke.co.skyworld.internship.repository;
 
-import ke.co.skyworld.internship.domain.beans.ProductResponse;
+import ke.co.skyworld.internship.domain.beans.product.ProductResponse;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
 import java.sql.*;

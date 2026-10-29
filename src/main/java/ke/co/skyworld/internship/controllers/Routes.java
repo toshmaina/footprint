@@ -8,10 +8,7 @@ import io.undertow.util.Methods;
 import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.CreateAdvanceShippingNoticeHandler;
 import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.GetAdvanceShippingNoticeHandler;
 import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.ListAdvanceShippingNoticesHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.LoginHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.LogoutHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.RefreshHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.RegisterHandler;
+import ke.co.skyworld.internship.controllers.handlers.auth.*;
 import ke.co.skyworld.internship.controllers.handlers.customer.CreateCustomerHandler;
 import ke.co.skyworld.internship.controllers.handlers.customer.GetCustomerHandler;
 import ke.co.skyworld.internship.controllers.handlers.customer.ListCustomersHandler;
@@ -23,6 +20,12 @@ import ke.co.skyworld.internship.controllers.handlers.licenseplate.CreateLicense
 import ke.co.skyworld.internship.controllers.handlers.licenseplate.GetLicensePlateHandler;
 import ke.co.skyworld.internship.controllers.handlers.order.CreateOrderHandler;
 import ke.co.skyworld.internship.controllers.handlers.order.GetOrderHandler;
+import ke.co.skyworld.internship.controllers.handlers.packages.AddPackageLineHandler;
+import ke.co.skyworld.internship.controllers.handlers.packages.ConfirmPackageHandler;
+import ke.co.skyworld.internship.controllers.handlers.packages.CreatePackageHandler;
+import ke.co.skyworld.internship.controllers.handlers.packages.GetPackageHandler;
+import ke.co.skyworld.internship.controllers.handlers.picktask.ConfirmPickHandler;
+import ke.co.skyworld.internship.controllers.handlers.picktask.CreatePickTaskHandler;
 import ke.co.skyworld.internship.controllers.handlers.pickupwave.CreatePickWaveHandler;
 import ke.co.skyworld.internship.controllers.handlers.pickupwave.GetPickWaveHandler;
 import ke.co.skyworld.internship.controllers.handlers.products.*;
@@ -33,6 +36,10 @@ import ke.co.skyworld.internship.controllers.handlers.purchaseorder.ListPurchase
 import ke.co.skyworld.internship.controllers.handlers.putaway.ConfirmPutawayHandler;
 import ke.co.skyworld.internship.controllers.handlers.putaway.CreatePutawayTaskHandler;
 import ke.co.skyworld.internship.controllers.handlers.qa.RecordQaInspectionHandler;
+import ke.co.skyworld.internship.controllers.handlers.shipment.AttachPackageToShipmentHandler;
+import ke.co.skyworld.internship.controllers.handlers.shipment.CreateShipmentHandler;
+import ke.co.skyworld.internship.controllers.handlers.shipment.DispatchShipmentHandler;
+import ke.co.skyworld.internship.controllers.handlers.shipment.GetShipmentHandler;
 import ke.co.skyworld.internship.controllers.handlers.storagelocation.*;
 import ke.co.skyworld.internship.controllers.handlers.suppliers.*;
 import ke.co.skyworld.internship.controllers.handlers.warehouses.*;
@@ -41,6 +48,9 @@ import ke.co.skyworld.internship.util.http.Dispatcher;
 import ke.co.skyworld.internship.util.http.FallBack;
 import ke.co.skyworld.internship.util.http.InvalidMethod;
 import ke.co.skyworld.internship.util.http.middleware.AuthMiddleware;
+import ke.co.skyworld.internship.util.http.middleware.RateLimiterMiddleware;
+
+import static ke.co.skyworld.internship.util.metrics.Metrics.metricsHandler;
 
 public class Routes {
 
@@ -52,12 +62,17 @@ public class Routes {
         return new AuthMiddleware(handler, requiredPermissions);
     }
 
+    public static HttpHandler rateLimited(HttpHandler handler) {
+        return new RateLimiterMiddleware(handler);
+    }
+
     private static RoutingHandler auth() {
         return Handlers.routing()
                 .add(Methods.POST, "/register", authed(new RegisterHandler(), "identity.users.create"))
                 .add(Methods.POST, "/login", new LoginHandler())
+                .add(Methods.POST, "/verify-otp", new VerifyOtpHandler())
                 .add(Methods.POST, "/refresh", new RefreshHandler())
-                .add(Methods.POST, "/logout", authed(new LogoutHandler()))
+                .add(Methods.POST, "/logout", new LogoutHandler())
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
                 .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
@@ -236,14 +251,45 @@ public class Routes {
         return Handlers.routing()
                 .add(Methods.GET, "/{id}", authed(new GetPickWaveHandler()))
                 .add(Methods.POST, "/", authed(new CreatePickWaveHandler(), "inventory.picking.write"))
+                .add(Methods.POST, "/{id}/tasks", authed(new CreatePickTaskHandler(), "inventory.picking.write"))
+                .add(Methods.POST, "/pick-tasks/{id}/confirm", authed(new ConfirmPickHandler(), "inventory.picking.write"))
                 .setFallbackHandler(new FallBack())
                 .setInvalidMethodHandler(new InvalidMethod())
                 .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
                 }));
     }
 
+    private static RoutingHandler packages() {
+        return Handlers.routing()
+                .add(Methods.GET, "/{id}", authed(new GetPackageHandler()))
+                .add(Methods.POST, "/", authed(new CreatePackageHandler(), "inventory.packing.write"))
+                .add(Methods.POST, "/{id}/lines", authed(new AddPackageLineHandler(), "inventory.packing.write"))
+                .add(Methods.POST, "/{id}/confirm", authed(new ConfirmPackageHandler(), "inventory.packing.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
+    }
+
+    /**
+     * /shipments/{id}/dispatch is a batch operation that can touch multiple
+     * orders at once - see ShipmentRepository.dispatch()'s docs.
+     */
+    private static RoutingHandler shipments() {
+        return Handlers.routing()
+                .add(Methods.GET, "/{id}", authed(new GetShipmentHandler()))
+                .add(Methods.POST, "/", authed(new CreateShipmentHandler(), "inventory.shipping.write"))
+                .add(Methods.POST, "/{id}/packages", authed(new AttachPackageToShipmentHandler(), "inventory.shipping.write"))
+                .add(Methods.POST, "/{id}/dispatch", authed(new DispatchShipmentHandler(), "inventory.shipping.write"))
+                .setFallbackHandler(new FallBack())
+                .setInvalidMethodHandler(new InvalidMethod())
+                .add(Methods.OPTIONS, "/*", new CorsHandler(exchange -> {
+                }));
+    }
+
+
     public static HttpHandler buildRouteHandler() {
-        PathHandler path = Handlers.path();
+        PathHandler path = Handlers.path(new FallBack());
 
         path.addPrefixPath("/auth", new Dispatcher(auth()));
         path.addPrefixPath("/products", new Dispatcher(products()));
@@ -260,6 +306,10 @@ public class Routes {
         path.addPrefixPath("/orders", new Dispatcher(orders()));
         path.addPrefixPath("/pick-waves", new Dispatcher(pickWaves()));
         path.addPrefixPath("/discrepancies", new Dispatcher(discrepancies()));
+        path.addPrefixPath("/packages", new Dispatcher(packages()));
+        path.addPrefixPath("/shipments", new Dispatcher(shipments()));
+        path.addPrefixPath("/metrics", metricsHandler());
+
 
         return path;
     }

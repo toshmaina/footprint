@@ -15,7 +15,7 @@ public class SkyCoreScheduler {
             instance;
     private final Scheduler SkyCoreScheduler;
     private final Map<String, JobConsumer> jobHandlers;
-    private boolean autoStart = true;
+    private final boolean autoStart = true;
 
     public SkyCoreScheduler
             () throws SchedulerException {

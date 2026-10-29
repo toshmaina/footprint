@@ -1,8 +1,10 @@
 package ke.co.skyworld.internship.repository;
 
+import ke.co.skyworld.internship.domain.enums.UserAccountStatus;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 
 import java.sql.*;
+import java.util.Optional;
 
 /**
  * Minimal for now - what AuthMiddleware, login, and registration need.
@@ -27,12 +29,11 @@ public class UserAccountRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, userAccountId);
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    return null;
-                }
+                if (!rs.next()) return null;
                 long warehouseId = rs.getLong("user_account_default_warehouse_id");
                 Long defaultWarehouseId = rs.wasNull() ? null : warehouseId;
-                return new AuthSnapshot(defaultWarehouseId, rs.getString("user_account_status"));
+                UserAccountStatus userAccountStatus = UserAccountStatus.valueOf(rs.getString("user_account_status").toUpperCase());
+                return new AuthSnapshot(defaultWarehouseId, userAccountStatus);
             }
         }
     }
@@ -43,9 +44,9 @@ public class UserAccountRepository {
      * credentials" message whether the username doesn't exist or the
      * password was wrong, so as not to leak which usernames are registered.
      */
-    public LoginCredentials findLoginCredentials(String username) throws SQLException {
+    public Optional<LoginCredentials> findLoginCredentials(String username) throws SQLException {
         String sql = """
-                SELECT user_account_id, user_account_password_hash, user_account_status
+                SELECT user_account_id, user_account_password_hash, user_account_username, user_account_email,user_account_status
                 FROM user_accounts
                 WHERE user_account_username = ?
                 """;
@@ -54,14 +55,14 @@ public class UserAccountRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    return null;
-                }
-                return new LoginCredentials(
+                if (!rs.next()) return Optional.empty();
+                return Optional.of(new LoginCredentials(
                         rs.getLong("user_account_id"),
                         rs.getString("user_account_password_hash"),
-                        rs.getString("user_account_status")
-                );
+                        rs.getString("user_account_username"),
+                        rs.getString("user_account_email"),
+                        UserAccountStatus.valueOf(rs.getString("user_account_status").toUpperCase())
+                ));
             }
         }
     }
@@ -100,10 +101,10 @@ public class UserAccountRepository {
     public long createUser(String username, String email, String passwordHash, String fullName, Long warehouseId) throws SQLException {
         String sql = """
                 INSERT INTO user_accounts (
-                    user_account_username, 
-                    user_account_email, 
-                    user_account_password_hash, 
-                    user_account_full_name, 
+                    user_account_username,
+                    user_account_email,
+                    user_account_password_hash,
+                    user_account_full_name,
                     user_account_default_warehouse_id
                 ) VALUES (?, ?, ?, ?, ?)
                 RETURNING user_account_id
@@ -139,9 +140,10 @@ public class UserAccountRepository {
         }
     }
 
-    public record AuthSnapshot(Long defaultWarehouseId, String status) {
+    public record AuthSnapshot(Long defaultWarehouseId, UserAccountStatus status) {
     }
 
-    public record LoginCredentials(long userAccountId, String passwordHash, String status) {
+    public record LoginCredentials(long userAccountId, String passwordHash, String userAccountUserName,
+                                   String userAccountEmail, UserAccountStatus status) {
     }
 }

@@ -2,7 +2,7 @@ package ke.co.skyworld.internship.controllers.handlers.products;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
-import ke.co.skyworld.internship.domain.beans.ProductRequest;
+import ke.co.skyworld.internship.domain.beans.product.ProductRequest;
 import ke.co.skyworld.internship.repository.ProductRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
@@ -38,12 +38,12 @@ public class UpdateProductHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || isBlank(request.getName())) {
+        if (request == null || isBlank(request.name())) {
             sendError(exchange, "name is required", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request.getClassification() != null && !VALID_CLASSIFICATIONS.contains(request.getClassification())) {
+        if (request.classification() != null && !VALID_CLASSIFICATIONS.contains(request.classification())) {
             sendError(exchange, "classification must be one of A, B, C", StatusCodes.BAD_REQUEST);
             return;
         }
@@ -55,8 +55,8 @@ public class UpdateProductHandler extends SkyInventoryManagementHttpHandler {
         // need that, it should be a deliberate separate operation, not a
         // side effect of a general update call.
         try {
-            boolean updated = productRepository.update(productId, request.getName(), request.getCategory(),
-                    request.getReorderThreshold(), request.getClassification());
+            boolean updated = productRepository.update(productId, request.name(), request.category(),
+                    request.reorderThreshold(), request.classification());
             if (!updated) {
                 sendError(exchange, "Product not found", StatusCodes.NOT_FOUND);
                 return;

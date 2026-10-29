@@ -25,31 +25,31 @@ public class CreateAdvanceShippingNoticeHandler extends SkyInventoryManagementHt
             return;
         }
 
-        if (request == null || request.getSupplierId() == null || request.getWarehouseId() == null
-                || request.getExpectedArrival() == null) {
+        if (request == null || request.supplierId() == null || request.warehouseId() == null
+                || request.expectedArrival() == null) {
             sendError(exchange, "supplierId, warehouseId, and expectedArrival are required", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request.getLines() == null || request.getLines().isEmpty()) {
+        if (request.lines() == null || request.lines().isEmpty()) {
             sendError(exchange, "An ASN must have at least one line", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        for (AdvanceShippingNoticeRequest.Line line : request.getLines()) {
-            if (line.getProductId() == null || line.getQuantityExpected() == null) {
+        for (AdvanceShippingNoticeRequest.Line line : request.lines()) {
+            if (line.productId() == null || line.quantityExpected() == null) {
                 sendError(exchange, "Each line requires productId and quantityExpected", StatusCodes.BAD_REQUEST);
                 return;
             }
-            if (line.getQuantityExpected() <= 0) {
+            if (line.quantityExpected() <= 0) {
                 sendError(exchange, "quantityExpected must be positive", StatusCodes.BAD_REQUEST);
                 return;
             }
         }
 
         try {
-            long asnId = asnRepository.createWithLines(request.getPurchaseOrderId(), request.getSupplierId(),
-                    request.getWarehouseId(), request.getCarrier(), request.getExpectedArrival(), request.getLines());
+            long asnId = asnRepository.createWithLines(request.purchaseOrderId(), request.supplierId(),
+                    request.warehouseId(), request.carrier(), request.expectedArrival(), request.lines());
             send(exchange, Map.of("advanceShippingNoticeId", asnId), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23503".equals(e.getSQLState())) {

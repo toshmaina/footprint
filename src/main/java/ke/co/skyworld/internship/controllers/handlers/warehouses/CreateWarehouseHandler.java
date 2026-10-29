@@ -9,6 +9,7 @@ import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 public class CreateWarehouseHandler extends SkyInventoryManagementHttpHandler {
 
@@ -28,18 +29,18 @@ public class CreateWarehouseHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || isBlank(request.getCode()) || isBlank(request.getName())) {
+        if (request == null || isBlank(request.code()) || isBlank(request.name())) {
             sendError(exchange, "code and name are required", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            if (warehouseRepository.codeExists(request.getCode())) {
+            if (warehouseRepository.codeExists(request.code())) {
                 sendError(exchange, "A warehouse with this code already exists", StatusCodes.CONFLICT);
                 return;
             }
-            long warehouseId = warehouseRepository.create(request.getCode(), request.getName(), request.getAddress());
-            send(exchange, java.util.Map.of("warehouseId", warehouseId), StatusCodes.CREATED);
+            long warehouseId = warehouseRepository.create(request.code(), request.name(), request.address());
+            send(exchange, Map.of("warehouseId", warehouseId), StatusCodes.CREATED);
         } catch (SQLException e) {
             if ("23505".equals(e.getSQLState())) {
                 sendError(exchange, "A warehouse with this code already exists", StatusCodes.CONFLICT);

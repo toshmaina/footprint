@@ -34,13 +34,24 @@ public class TemplateEngine {
     public static String render(String templatePath, Map<String, Object> model) {
         try {
             Template template = CFG.getTemplate(templatePath);
+
             StringWriter out = new StringWriter();
             template.process(model, out);
+
             return out.toString();
+
         } catch (Exception e) {
-            Log.error(TemplateEngine.class, "render",
-                    "Failed to render template: " + templatePath, e);
-            throw new RuntimeException("Template rendering failed: " + templatePath, e);
+            Log.error(
+                    TemplateEngine.class,
+                    "render",
+                    "Failed to render template: " + templatePath,
+                    e
+            );
+
+            throw new RuntimeException(
+                    "Template rendering failed: " + templatePath,
+                    e
+            );
         }
     }
 }

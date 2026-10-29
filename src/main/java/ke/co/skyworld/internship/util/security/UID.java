@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class UID {
     private static final SecureRandom RANDOM = new SecureRandom();
-    private String salt = "abcdefghijklmnopqrstuvwxyz@#$!%^&*(*)1234567890";
+    private final String salt = "abcdefghijklmnopqrstuvwxyz@#$!%^&*(*)1234567890";
 
     public static String generateToken(int length) {
         if (length <= 32) {
@@ -30,7 +30,17 @@ public class UID {
         return token.substring(0, Math.min(length, token.length()));
     }
 
-    private String getUUID() {
+    public static String generateOtp(int length) {
+        if (length <= 0) throw new IllegalArgumentException("Length must be greater than 1");
+
+        StringBuilder otp = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            otp.append(RANDOM.nextInt(10));
+        }
+        return otp.toString();
+    }
+
+    public static String getUUID() {
         return UUID.randomUUID().toString();
     }
 

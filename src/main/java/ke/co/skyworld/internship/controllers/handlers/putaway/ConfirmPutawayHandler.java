@@ -32,7 +32,7 @@ public class ConfirmPutawayHandler extends SkyInventoryManagementHttpHandler {
             return;
         }
 
-        if (request == null || request.getActualStorageLocationId() == null) {
+        if (request == null || request.actualStorageLocationId() == null) {
             sendError(exchange, "actualStorageLocationId is required", StatusCodes.BAD_REQUEST);
             return;
         }
@@ -41,7 +41,7 @@ public class ConfirmPutawayHandler extends SkyInventoryManagementHttpHandler {
         String confirmedBy = String.valueOf(context.userAccountId());
 
         try {
-            putawayRepository.confirmTask(putawayTaskId, request.getActualStorageLocationId(), confirmedBy);
+            putawayRepository.confirmTask(putawayTaskId, request.actualStorageLocationId(), confirmedBy);
             send(exchange, java.util.Map.of("message", "Putaway confirmed"), StatusCodes.OK);
         } catch (PutawayRepository.InvalidStateException e) {
             // Covers both "already confirmed" (the double-confirmation case

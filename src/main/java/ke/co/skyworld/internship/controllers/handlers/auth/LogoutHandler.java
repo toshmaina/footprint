@@ -2,25 +2,14 @@ package ke.co.skyworld.internship.controllers.handlers.auth;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
-import ke.co.skyworld.internship.domain.beans.LogoutRequest;
+import ke.co.skyworld.internship.domain.beans.auth.LogoutRequest;
 import ke.co.skyworld.internship.repository.TokenRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
 import ke.co.skyworld.internship.util.logging.Log;
 
 import java.sql.SQLException;
+import java.util.Map;
 
-/**
- * Sits behind AuthMiddleware - requires a valid access token to call at all.
- * Revokes that access token, and also revokes the refresh token if the
- * caller supplies one in the body.
- * <p>
- * Known gap: access and refresh tokens aren't linked in the schema (no
- * shared session id), so a logout call that only has the access token
- * can't automatically find and revoke its paired refresh token - the
- * client is responsible for sending both if it wants a complete logout.
- * A "logout everywhere" (revoke all tokens for this user) is a separate,
- * not-yet-built feature.
- */
 public class LogoutHandler extends SkyInventoryManagementHttpHandler {
 
     private final TokenRepository tokenRepository = new TokenRepository();
@@ -30,18 +19,16 @@ public class LogoutHandler extends SkyInventoryManagementHttpHandler {
         String accessToken = getAuthToken(exchange);
 
         try {
-            if (accessToken != null && !accessToken.isBlank()) {
-                tokenRepository.revokeToken(accessToken);
+            if (accessToken == null || accessToken.isBlank()) {
+                sendError(exchange, "Access token is required", StatusCodes.UNAUTHORIZED);
+                return;
             }
-
-            // Body is optional - a client that only sends the access token
-            // still gets a clean logout of that token.
             LogoutRequest request = tryParseBody(exchange);
-            if (request != null && request.getRefreshToken() != null && !request.getRefreshToken().isBlank()) {
-                tokenRepository.revokeToken(request.getRefreshToken());
+            if (request != null && request.refreshToken() != null && !request.refreshToken().isBlank()) {
+                tokenRepository.revokeToken(request.refreshToken());
             }
 
-            send(exchange, java.util.Map.of("message", "Logged out"), StatusCodes.OK);
+            send(exchange, Map.of("message", "Logged out"), StatusCodes.OK);
         } catch (SQLException e) {
             Log.error(getClass(), "handleRequest", "Logout failed: " + e.getMessage(), e);
             sendError(exchange, "Logout failed", StatusCodes.INTERNAL_SERVER_ERROR);
@@ -52,7 +39,7 @@ public class LogoutHandler extends SkyInventoryManagementHttpHandler {
         try {
             return parseBody(exchange, LogoutRequest.class);
         } catch (Exception e) {
-            return null; // no body, or malformed - logout still proceeds on the access token alone
+            return null;
         }
     }
 }

@@ -3,73 +3,86 @@ package ke.co.skyworld.internship.controllers.handlers.auth;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import ke.co.skyworld.internship.config.Constants;
-import ke.co.skyworld.internship.domain.beans.LoginRequest;
-import ke.co.skyworld.internship.domain.beans.LoginResponse;
-import ke.co.skyworld.internship.domain.enums.TokenType;
-import ke.co.skyworld.internship.repository.TokenRepository;
+import ke.co.skyworld.internship.domain.beans.auth.LoginRequest;
+import ke.co.skyworld.internship.domain.enums.UserAccountStatus;
 import ke.co.skyworld.internship.repository.UserAccountRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
+import ke.co.skyworld.internship.util.infra.EmailService;
 import ke.co.skyworld.internship.util.logging.Log;
+import ke.co.skyworld.internship.util.memory.InMemoryCache;
 import ke.co.skyworld.internship.util.security.Encryption;
-import ke.co.skyworld.internship.util.security.TokenTtl;
+import ke.co.skyworld.internship.util.security.UID;
+import ke.co.skyworld.internship.util.validation.Validation;
 
+import java.io.IOException;
 import java.sql.SQLException;
-import java.time.Duration;
+import java.util.Optional;
 
 public class LoginHandler extends SkyInventoryManagementHttpHandler {
 
-    private static final int REFRESH_TOKEN_LENGTH = Constants.getRefreshTokenLength();
-    private static final int ACCESS_TOKEN_LENGTH = Constants.getAccessTokenLength();
-    private final UserAccountRepository userAccountRepository = new UserAccountRepository();
-    private final TokenRepository tokenRepository = new TokenRepository();
 
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
-    }
+    private final UserAccountRepository userAccountRepository = new UserAccountRepository();
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
         LoginRequest request;
         try {
             request = parseBody(exchange, LoginRequest.class);
-        } catch (Exception e) {
+        } catch (IOException e) {
+            Log.warning(LoginHandler.class, "handleRequest",
+                    "Failed to parse login request body: " + e.getMessage());
+            sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
+            return;
+        }
+        if (request == null) {
             sendError(exchange, "Malformed request body", StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (request == null || isBlank(request.getUsername()) || isBlank(request.getPassword())) {
-            sendError(exchange, "Username and password are required", StatusCodes.BAD_REQUEST);
+        String validationError = Validation.validate(request);
+
+        if (validationError != null) {
+            Log.warning(LoginHandler.class, "handleRequest", validationError);
+            sendError(exchange, validationError, StatusCodes.BAD_REQUEST);
             return;
         }
 
-        try {
-            UserAccountRepository.LoginCredentials credentials =
-                    userAccountRepository.findLoginCredentials(request.getUsername());
 
-            // Same generic message whether the username doesn't exist or the
-            // password is wrong - never confirm which usernames are registered.
-            if (credentials == null || !Encryption.verifyPassword(
-                    request.getPassword(), credentials.passwordHash())) {
+        try {
+            Optional<UserAccountRepository.LoginCredentials> credentials =
+                    userAccountRepository.findLoginCredentials(request.username());
+            if (credentials.isEmpty() || !Encryption.verifyPassword(
+                    request.password(), credentials.get().passwordHash())) {
                 sendError(exchange, "Invalid username or password", StatusCodes.UNAUTHORIZED);
                 return;
             }
 
-            if (!"active".equalsIgnoreCase(credentials.status())) {
-                sendError(exchange, "This account is " + credentials.status().toLowerCase()
+
+            if (credentials.get().status() != UserAccountStatus.ACTIVE) {
+                sendError(exchange, "This account is " + credentials.get().status().name().toLowerCase()
                         + " and cannot log in", StatusCodes.FORBIDDEN);
                 return;
             }
 
-            Duration accessTtl = TokenTtl.accessTokenTtl();
-            Duration refreshTtl = TokenTtl.refreshTokenTtl();
+            String otp = UID.generateOtp(6);
+            String key = "OTP_KEY:" + UID.getUUID();
+            long ttlMs = Constants.getOtpTtlMinutes() * 60 * 1000;
+            VerifyOtpHandler.MemoryCacheOtpStore payload = new VerifyOtpHandler.MemoryCacheOtpStore(String.valueOf(credentials.get().userAccountId()), key, otp);
+            String uid = key.substring("OTP_KEY:".length());
+            InMemoryCache.put(key, payload, ttlMs);
 
-            String accessToken = tokenRepository.issueToken(credentials.userAccountId(), TokenType.ACCESS, accessTtl, ACCESS_TOKEN_LENGTH);
-            String refreshToken = tokenRepository.issueToken(credentials.userAccountId(), TokenType.REFRESH, refreshTtl, REFRESH_TOKEN_LENGTH);
+            EmailService.sendVerificationOtp(credentials.get().userAccountEmail(), credentials.get().userAccountUserName(), otp);
 
-            send(exchange, new LoginResponse(accessToken, refreshToken, accessTtl.toSeconds()), StatusCodes.OK);
+            send(exchange, new LoginKeyResponse(uid), StatusCodes.OK);
+
         } catch (SQLException e) {
             Log.error(getClass(), "handleRequest", "Login failed: " + e.getMessage(), e);
             sendError(exchange, "Login failed", StatusCodes.INTERNAL_SERVER_ERROR);
         }
+
     }
+
+    private static record LoginKeyResponse(String key) {
+    }
+
 }

@@ -33,14 +33,14 @@ public class CreatePutawayTaskHandler extends SkyInventoryManagementHttpHandler 
             return;
         }
 
-        if (request == null || request.getSuggestedStorageLocationId() == null) {
+        if (request == null || request.suggestedStorageLocationId() == null) {
             sendError(exchange, "suggestedStorageLocationId is required", StatusCodes.BAD_REQUEST);
             return;
         }
 
         try {
-            long taskId = putawayRepository.createTask(licensePlateId, request.getSuggestedStorageLocationId(),
-                    request.getAssignedTo());
+            long taskId = putawayRepository.createTask(licensePlateId, request.suggestedStorageLocationId(),
+                    request.assignedTo());
             send(exchange, java.util.Map.of("putawayTaskId", taskId), StatusCodes.CREATED);
         } catch (PutawayRepository.InvalidStateException e) {
             sendError(exchange, e.getMessage(), StatusCodes.CONFLICT);

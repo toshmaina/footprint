@@ -1,8 +1,11 @@
 package ke.co.skyworld.internship.repository;
 
+import ke.co.skyworld.internship.config.Constants;
+import ke.co.skyworld.internship.domain.beans.auth.TokenPair;
 import ke.co.skyworld.internship.domain.enums.TokenType;
 import ke.co.skyworld.internship.util.db.ConnectionPool;
 import ke.co.skyworld.internship.util.security.Encryption;
+import ke.co.skyworld.internship.util.security.TokenTtl;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -13,6 +16,8 @@ import java.time.Duration;
 import java.util.HexFormat;
 
 public class TokenRepository {
+    private static final int REFRESH_TOKEN_LENGTH = Constants.getRefreshTokenLength();
+    private static final int ACCESS_TOKEN_LENGTH = Constants.getAccessTokenLength();
 
     private static final SecureRandom SECURE_RANDOM =
             new SecureRandom();
@@ -69,6 +74,12 @@ public class TokenRepository {
                         : null;
             }
         }
+    }
+
+    public TokenPair issueTokenPair(long userAccountId) throws SQLException {
+        String accessToken = issueToken(userAccountId, TokenType.ACCESS, TokenTtl.accessTokenTtl(), ACCESS_TOKEN_LENGTH);
+        String refreshToken = issueToken(userAccountId, TokenType.REFRESH, TokenTtl.refreshTokenTtl(), REFRESH_TOKEN_LENGTH);
+        return new TokenPair(accessToken, refreshToken);
     }
 
     public String issueToken(

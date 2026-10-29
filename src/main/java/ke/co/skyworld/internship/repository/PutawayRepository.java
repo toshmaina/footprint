@@ -76,8 +76,7 @@ public class PutawayRepository {
      * backstop if, for whatever reason, two processes ever bypass the
      * row lock (e.g. different connection pools, a future refactor
      * that forgets the lock). The INSERT itself will throw 23505.
-     * Belt and suspenders is deliberate here, not redundant - this is the
-     * exact failure mode ("phantom stock") the whole project opened with.
+     * Belt and suspenders is deliberate here, not redundant
      */
     public void confirmTask(long putawayTaskId, long actualStorageLocationId, String confirmedBy) throws SQLException {
         String lockTaskSql = """
@@ -176,6 +175,7 @@ public class PutawayRepository {
                     ps.setString(7, confirmedBy);
                     ps.executeUpdate();
                 }
+                BackorderAllocator.allocate(conn, productId, warehouseId, confirmedBy);
 
                 conn.commit();
             } catch (SQLException | InvalidStateException e) {
