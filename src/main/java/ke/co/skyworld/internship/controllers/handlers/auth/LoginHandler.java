@@ -2,16 +2,16 @@ package ke.co.skyworld.internship.controllers.handlers.auth;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
+import ke.co.skyworld.internship.config.Constants;
 import ke.co.skyworld.internship.domain.beans.auth.LoginRequest;
-import ke.co.skyworld.internship.domain.beans.auth.LoginResponse;
-import ke.co.skyworld.internship.domain.beans.auth.TokenPair;
 import ke.co.skyworld.internship.domain.enums.UserAccountStatus;
-import ke.co.skyworld.internship.repository.TokenRepository;
 import ke.co.skyworld.internship.repository.UserAccountRepository;
 import ke.co.skyworld.internship.util.http.SkyInventoryManagementHttpHandler;
+import ke.co.skyworld.internship.util.infra.EmailService;
 import ke.co.skyworld.internship.util.logging.Log;
+import ke.co.skyworld.internship.util.memory.InMemoryCache;
 import ke.co.skyworld.internship.util.security.Encryption;
-import ke.co.skyworld.internship.util.security.TokenTtl;
+import ke.co.skyworld.internship.util.security.UID;
 import ke.co.skyworld.internship.util.validation.Validation;
 
 import java.io.IOException;
@@ -22,7 +22,6 @@ public class LoginHandler extends SkyInventoryManagementHttpHandler {
 
 
     private final UserAccountRepository userAccountRepository = new UserAccountRepository();
-    private final TokenRepository tokenRepository = new TokenRepository();
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -64,11 +63,26 @@ public class LoginHandler extends SkyInventoryManagementHttpHandler {
                         + " and cannot log in", StatusCodes.FORBIDDEN);
                 return;
             }
-            TokenPair tokenPair = tokenRepository.issueTokenPair(credentials.get().userAccountId());
-            send(exchange, new LoginResponse(tokenPair.accessToken(), tokenPair.refreshToken(), TokenTtl.accessTokenTtl().toSeconds()), StatusCodes.OK);
+
+            String otp = UID.generateOtp(6);
+            String key = "OTP_KEY:" + UID.getUUID();
+            long ttlMs = Constants.getOtpTtlMinutes() * 60 * 1000;
+            VerifyOtpHandler.MemoryCacheOtpStore payload = new VerifyOtpHandler.MemoryCacheOtpStore(String.valueOf(credentials.get().userAccountId()), key, otp);
+            String uid = key.substring("OTP_KEY:".length());
+            InMemoryCache.put(key, payload, ttlMs);
+
+            EmailService.sendVerificationOtp(credentials.get().userAccountEmail(), credentials.get().userAccountUserName(), otp);
+
+            send(exchange, new LoginKeyResponse(uid), StatusCodes.OK);
+
         } catch (SQLException e) {
             Log.error(getClass(), "handleRequest", "Login failed: " + e.getMessage(), e);
             sendError(exchange, "Login failed", StatusCodes.INTERNAL_SERVER_ERROR);
         }
+
     }
+
+    private static record LoginKeyResponse(String key) {
+    }
+
 }

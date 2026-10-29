@@ -8,10 +8,7 @@ import io.undertow.util.Methods;
 import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.CreateAdvanceShippingNoticeHandler;
 import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.GetAdvanceShippingNoticeHandler;
 import ke.co.skyworld.internship.controllers.handlers.advanceshippingnotice.ListAdvanceShippingNoticesHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.LoginHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.LogoutHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.RefreshHandler;
-import ke.co.skyworld.internship.controllers.handlers.auth.RegisterHandler;
+import ke.co.skyworld.internship.controllers.handlers.auth.*;
 import ke.co.skyworld.internship.controllers.handlers.customer.CreateCustomerHandler;
 import ke.co.skyworld.internship.controllers.handlers.customer.GetCustomerHandler;
 import ke.co.skyworld.internship.controllers.handlers.customer.ListCustomersHandler;
@@ -73,6 +70,7 @@ public class Routes {
         return Handlers.routing()
                 .add(Methods.POST, "/register", authed(new RegisterHandler(), "identity.users.create"))
                 .add(Methods.POST, "/login", new LoginHandler())
+                .add(Methods.POST, "/verify-otp", new VerifyOtpHandler())
                 .add(Methods.POST, "/refresh", new RefreshHandler())
                 .add(Methods.POST, "/logout", new LogoutHandler())
                 .setFallbackHandler(new FallBack())

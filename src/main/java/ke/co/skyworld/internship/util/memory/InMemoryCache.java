@@ -10,42 +10,64 @@ import java.util.concurrent.ConcurrentHashMap;
  * Description:
  **/
 
-public class InMemoryCache<V> {
+public final class InMemoryCache {
 
-    private final ConcurrentHashMap<String, Entry<V>> store = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Entry> store =
+            new ConcurrentHashMap<>();
 
-    public void put(String key, V value, long ttlMs) {
-        long expiresAt = Instant.now().toEpochMilli() + ttlMs;
-        store.put(key, new Entry<>(value, expiresAt));
+    private InMemoryCache() {
+    }
+
+    public static <V> void put(String key, V value, long ttlMs) {
+        if (ttlMs <= 0) {
+            throw new IllegalArgumentException("TTL must be positive");
+        }
+
+        long expiresAt = Math.addExact(
+                Instant.now().toEpochMilli(),
+                ttlMs
+        );
+
+        store.put(key, new Entry(value, expiresAt));
         evict();
     }
 
-    public V get(String key) {
-        Entry<V> entry = store.get(key);
-        if (entry == null) return null;
-        if (entry.isExpired()) {
-            store.remove(key);
+    @SuppressWarnings("unchecked")
+    public static <V> V get(String key) {
+        Entry entry = store.get(key);
+
+        if (entry == null) {
             return null;
         }
-        return entry.value;
+
+        if (entry.isExpired()) {
+            store.remove(key, entry);
+            return null;
+        }
+
+        return (V) entry.value();
     }
 
-    public boolean has(String key) {
+    public static boolean has(String key) {
         return get(key) != null;
     }
 
-    public void remove(String key) {
-        store.remove(key);
+    public static boolean remove(String key) {
+        return store.remove(key) != null;
     }
 
-    private void evict() {
+    private static void evict() {
         long now = Instant.now().toEpochMilli();
-        store.entrySet().removeIf(e -> e.getValue().expiresAt < now);
+
+        store.entrySet().removeIf(
+                entry -> entry.getValue().expiresAt() <= now
+        );
     }
 
-    private record Entry<V>(V value, long expiresAt) {
+    private record Entry(Object value, long expiresAt) {
+
         boolean isExpired() {
-            return Instant.now().toEpochMilli() > expiresAt;
+            return Instant.now().toEpochMilli() >= expiresAt;
         }
     }
 }

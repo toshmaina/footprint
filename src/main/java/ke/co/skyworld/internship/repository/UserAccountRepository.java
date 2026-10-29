@@ -46,7 +46,7 @@ public class UserAccountRepository {
      */
     public Optional<LoginCredentials> findLoginCredentials(String username) throws SQLException {
         String sql = """
-                SELECT user_account_id, user_account_password_hash, user_account_status
+                SELECT user_account_id, user_account_password_hash, user_account_username, user_account_email,user_account_status
                 FROM user_accounts
                 WHERE user_account_username = ?
                 """;
@@ -59,6 +59,8 @@ public class UserAccountRepository {
                 return Optional.of(new LoginCredentials(
                         rs.getLong("user_account_id"),
                         rs.getString("user_account_password_hash"),
+                        rs.getString("user_account_username"),
+                        rs.getString("user_account_email"),
                         UserAccountStatus.valueOf(rs.getString("user_account_status").toUpperCase())
                 ));
             }
@@ -141,6 +143,7 @@ public class UserAccountRepository {
     public record AuthSnapshot(Long defaultWarehouseId, UserAccountStatus status) {
     }
 
-    public record LoginCredentials(long userAccountId, String passwordHash, UserAccountStatus status) {
+    public record LoginCredentials(long userAccountId, String passwordHash, String userAccountUserName,
+                                   String userAccountEmail, UserAccountStatus status) {
     }
 }

@@ -264,7 +264,7 @@ public class Constants {
         return !"false".equalsIgnoreCase(v); // default true
     }
 
-    public static int getOtpTtlMinutes() {
+    public static long getOtpTtlMinutes() {
         String v = XmlUtils.readXMLTag(XML_PATH_TO_OTP_TTL_MINUTES);
         try {
             return Integer.parseInt(v);
